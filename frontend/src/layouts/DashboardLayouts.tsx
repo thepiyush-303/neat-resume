@@ -40,6 +40,29 @@ export default function DashboardLayout() {
 
             if (response.ok && result.success) {
                 setStatus(`Success! Extracted data for: ${result.data.fileName}`);
+
+                const parsedText = result.data.extractedText;
+
+                // console.log(parsedText)
+
+                try{
+                  const llmResponse = await fetch('http://localhost:5000/api/format/llm',{
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        rawText: parsedText,
+                    }),
+                });
+                
+                const res = await llmResponse.json();
+                console.log(res)                
+
+              }
+              catch(error){
+                setStatus('Failed to parse data');
+              }
             } else {
                 setStatus(`Upload failed: ${result.message || 'Unknown error occurred'}`);
             }

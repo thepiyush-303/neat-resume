@@ -10,7 +10,6 @@ export const handleResumeUpload = async (req: Request, res: Response, next: Next
         const fileBuffer = req.file.buffer
         const fileName = req.file.originalname
 
-        // Convert Node Buffer to a Uint8Array so it's compatible with Blob's expected parts
         const fileBlob = new Blob([new Uint8Array(fileBuffer)], { type: req.file.mimetype });
 
         const formData = new FormData();
@@ -26,7 +25,7 @@ export const handleResumeUpload = async (req: Request, res: Response, next: Next
 
         const parsedData = await pythonResponse.json();
 
-        console.log(parsedData)
+        // console.log(parsedData)
 
         res.status(200).json({
             success: true,
