@@ -40,6 +40,8 @@ export const formatResumeData = async (req: Request, res: Response, next: NextFu
     }
     const extractedData = JSON.parse(rawContent);
 
+    console.log(extractedData)
+
     res.status(200).json({
       success: true,
       message: "Data formatted successfully",
