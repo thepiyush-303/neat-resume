@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id         String      @id @default(cuid())
+  email      String      @unique
+  password   String
+  createdAt  DateTime    @default(now())
+  portfolios Portfolio[]
+}
+
+model Portfolio {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  data      Json
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
