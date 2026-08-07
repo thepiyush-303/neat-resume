@@ -15,7 +15,10 @@ export const handleResumeUpload = async (req: Request, res: Response, next: Next
         const formData = new FormData();
         formData.append('file', fileBlob, req.file.originalname);
 
-        const pythonResponse = await fetch('https://neat-resume.onrender.com/extract', {
+        const pythonBaseUrl = process.env.PYTHON_SERVICE_URL || 'http://localhost:8000';
+        const pythonUrl = `${pythonBaseUrl.replace(/\/$/, '')}/extract`;
+
+        const pythonResponse = await fetch(pythonUrl, {
             method: 'POST',
             body: formData
         });
