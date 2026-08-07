@@ -4,7 +4,7 @@ import { Sparkles, Eye, EyeOff, Loader2, Lock, Mail, CheckCircle2 } from 'lucide
 import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 
-const API = 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const AuthPage: React.FC = () => {
   const [params] = useSearchParams();

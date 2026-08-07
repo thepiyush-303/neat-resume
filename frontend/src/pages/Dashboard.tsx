@@ -10,7 +10,7 @@ import { useTheme } from '../context/ThemeContext';
 import type { PortfolioData } from '../context/PortfolioContext';
 import axios from 'axios';
 
-const API = 'http://localhost:5000';
+const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 type UploadStatus = 'idle' | 'uploading' | 'parsing' | 'success' | 'error';
 
