@@ -250,9 +250,9 @@ export const TemplateSelection: React.FC = () => {
         </header>
 
         {/* ── Main Portfolio Canvas ── */}
-        <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-gray-100/70 custom-scrollbar">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-100/70 custom-scrollbar">
           
-          <div className="max-w-5xl mx-auto bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden min-h-[850px]">
+          <div className="max-w-full mx-auto bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden min-h-[850px]">
             
             {/* Portfolio Grid Layout (2-Column Desktop layout matching reference image) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[850px]">

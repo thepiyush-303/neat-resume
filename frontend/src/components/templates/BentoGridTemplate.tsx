@@ -5,11 +5,11 @@ export const BentoGridTemplate: React.FC = () => {
   const { portfolioData: d } = usePortfolio();
   if (!d || !d.personalInfo) return null;
   const p = d.personalInfo;
-  const experience = d.experience ?? [];
-  const education = d.education ?? [];
-  const projects = d.projects ?? [];
-  const skills = d.skills ?? [];
-  const achievements = d.achievements ?? [];
+  const experience = (d.experience ?? []).filter(Boolean);
+  const education = (d.education ?? []).filter(Boolean);
+  const projects = (d.projects ?? []).filter(Boolean);
+  const skills = (d.skills ?? []).filter(Boolean);
+  const achievements = (d.achievements ?? []).filter(Boolean);
   const allSkills = skills.flatMap(s => s.items ?? []);
 
   const card = (bg: string, extra?: React.CSSProperties): React.CSSProperties => ({
@@ -18,7 +18,7 @@ export const BentoGridTemplate: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', background: '#030712', fontFamily: "'Inter', sans-serif", padding: '32px 24px' }}>
-      <div style={{ maxWidth: 960, margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 16 }}>
+      <div style={{ maxWidth: '100%', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(12, 1fr)', gap: 16 }}>
 
         {/* Hero */}
         <div style={{ ...card('linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#0ea5e9 100%)'), gridColumn: 'span 8', position: 'relative' }}>

@@ -5,15 +5,15 @@ export const MinimalistTemplate: React.FC = () => {
   const { portfolioData: d } = usePortfolio();
   if (!d || !d.personalInfo) return null;
   const p = d.personalInfo;
-  const experience = d.experience ?? [];
-  const education = d.education ?? [];
-  const projects = d.projects ?? [];
-  const skills = d.skills ?? [];
-  const achievements = d.achievements ?? [];
+  const experience = (d.experience ?? []).filter(Boolean);
+  const education = (d.education ?? []).filter(Boolean);
+  const projects = (d.projects ?? []).filter(Boolean);
+  const skills = (d.skills ?? []).filter(Boolean);
+  const achievements = (d.achievements ?? []).filter(Boolean);
 
   return (
     <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Inter', sans-serif", color: '#111' }}>
-      <div style={{ maxWidth: 720, margin: '0 auto', padding: '60px 40px' }}>
+      <div style={{ maxWidth: '100%', margin: '0 auto', padding: '60px 48px' }}>
 
         {/* Header */}
         <div style={{ marginBottom: 48 }}>

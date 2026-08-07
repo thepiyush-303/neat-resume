@@ -5,11 +5,11 @@ export const CorporateTemplate: React.FC = () => {
   const { portfolioData: d } = usePortfolio();
   if (!d || !d.personalInfo) return null;
   const p = d.personalInfo;
-  const experience = d.experience ?? [];
-  const education = d.education ?? [];
-  const projects = d.projects ?? [];
-  const skills = d.skills ?? [];
-  const achievements = d.achievements ?? [];
+  const experience = (d.experience ?? []).filter(Boolean);
+  const education = (d.education ?? []).filter(Boolean);
+  const projects = (d.projects ?? []).filter(Boolean);
+  const skills = (d.skills ?? []).filter(Boolean);
+  const achievements = (d.achievements ?? []).filter(Boolean);
 
   const Tag: React.FC<{ text: string }> = ({ text }) => (
     <span style={{ display: 'inline-block', fontSize: 11, fontWeight: 500, padding: '3px 10px', borderRadius: 4, background: '#eff6ff', color: '#2563eb', margin: '2px' }}>{text}</span>

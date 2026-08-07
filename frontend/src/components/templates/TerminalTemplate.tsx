@@ -20,11 +20,11 @@ export const TerminalTemplate: React.FC = () => {
   const { portfolioData: d } = usePortfolio();
   if (!d || !d.personalInfo) return null;
   const p = d.personalInfo;
-  const experience = d.experience ?? [];
-  const education = d.education ?? [];
-  const projects = d.projects ?? [];
-  const skills = d.skills ?? [];
-  const achievements = d.achievements ?? [];
+  const experience = (d.experience ?? []).filter(Boolean);
+  const education = (d.education ?? []).filter(Boolean);
+  const projects = (d.projects ?? []).filter(Boolean);
+  const skills = (d.skills ?? []).filter(Boolean);
+  const achievements = (d.achievements ?? []).filter(Boolean);
 
   return (
     <div style={{ minHeight: '100vh', padding: '40px 48px', background: '#0d1117', fontFamily: 'JetBrains Mono, Courier New, monospace' }}>
