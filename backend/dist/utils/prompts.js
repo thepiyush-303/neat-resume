@@ -1,4 +1,7 @@
-export const FORMATTING_PROMPT = `You are an expert technical recruiter and data extractor.
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.FORMATTING_PROMPT = void 0;
+exports.FORMATTING_PROMPT = `You are an expert technical recruiter and data extractor.
 Your task is to extract information from the provided raw resume text and format it into a structured developer portfolio JSON object matching the JSON schema.
 
 CRITICAL STRUCTURAL INSTRUCTIONS:

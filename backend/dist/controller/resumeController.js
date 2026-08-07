@@ -1,5 +1,8 @@
-import 'multer';
-export const handleResumeUpload = async (req, res, next) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.handleResumeUpload = void 0;
+require("multer");
+const handleResumeUpload = async (req, res, next) => {
     try {
         if (!req.file) {
             res.status(400).json({ success: false, message: "No File Uploaded" });
@@ -32,3 +35,4 @@ export const handleResumeUpload = async (req, res, next) => {
         next(err);
     }
 };
+exports.handleResumeUpload = handleResumeUpload;

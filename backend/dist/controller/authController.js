@@ -1,12 +1,18 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import prisma from "../lib/prisma";
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.login = exports.register = void 0;
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const prisma_1 = __importDefault(require("../lib/prisma"));
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret_fallback_key";
 const SALT_ROUNDS = 10;
 // In-memory fallback user store for database-free deployments
 const memoryUsers = new Map();
 // POST /api/auth/register
-export const register = async (req, res, next) => {
+const register = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
@@ -17,18 +23,18 @@ export const register = async (req, res, next) => {
             res.status(400).json({ success: false, message: "Password must be at least 6 characters." });
             return;
         }
-        if (prisma) {
+        if (prisma_1.default) {
             try {
-                const existingUser = await prisma.user.findUnique({ where: { email } });
+                const existingUser = await prisma_1.default.user.findUnique({ where: { email } });
                 if (existingUser) {
                     res.status(409).json({ success: false, message: "An account with this email already exists." });
                     return;
                 }
-                const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-                const user = await prisma.user.create({
+                const hashedPassword = await bcrypt_1.default.hash(password, SALT_ROUNDS);
+                const user = await prisma_1.default.user.create({
                     data: { email, password: hashedPassword },
                 });
-                const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+                const token = jsonwebtoken_1.default.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
                 res.status(201).json({
                     success: true,
                     message: "Account created successfully.",
@@ -47,10 +53,10 @@ export const register = async (req, res, next) => {
             res.status(409).json({ success: false, message: "An account with this email already exists." });
             return;
         }
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        const hashedPassword = await bcrypt_1.default.hash(password, SALT_ROUNDS);
         const userId = `user-${Date.now()}`;
         memoryUsers.set(normalizedEmail, { id: userId, email: normalizedEmail, passwordHash: hashedPassword });
-        const token = jwt.sign({ userId, email: normalizedEmail }, JWT_SECRET, { expiresIn: "7d" });
+        const token = jsonwebtoken_1.default.sign({ userId, email: normalizedEmail }, JWT_SECRET, { expiresIn: "7d" });
         res.status(201).json({
             success: true,
             message: "Account created successfully.",
@@ -62,21 +68,22 @@ export const register = async (req, res, next) => {
         next(err);
     }
 };
+exports.register = register;
 // POST /api/auth/login
-export const login = async (req, res, next) => {
+const login = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         if (!email || !password) {
             res.status(400).json({ success: false, message: "Email and password are required." });
             return;
         }
-        if (prisma) {
+        if (prisma_1.default) {
             try {
-                const user = await prisma.user.findUnique({ where: { email } });
+                const user = await prisma_1.default.user.findUnique({ where: { email } });
                 if (user) {
-                    const isPasswordValid = await bcrypt.compare(password, user.password);
+                    const isPasswordValid = await bcrypt_1.default.compare(password, user.password);
                     if (isPasswordValid) {
-                        const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
+                        const token = jsonwebtoken_1.default.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
                         res.status(200).json({
                             success: true,
                             message: "Logged in successfully.",
@@ -95,9 +102,9 @@ export const login = async (req, res, next) => {
         const normalizedEmail = email.toLowerCase();
         const memUser = memoryUsers.get(normalizedEmail);
         if (memUser) {
-            const isPasswordValid = await bcrypt.compare(password, memUser.passwordHash);
+            const isPasswordValid = await bcrypt_1.default.compare(password, memUser.passwordHash);
             if (isPasswordValid) {
-                const token = jwt.sign({ userId: memUser.id, email: memUser.email }, JWT_SECRET, { expiresIn: "7d" });
+                const token = jsonwebtoken_1.default.sign({ userId: memUser.id, email: memUser.email }, JWT_SECRET, { expiresIn: "7d" });
                 res.status(200).json({
                     success: true,
                     message: "Logged in successfully.",
@@ -109,7 +116,7 @@ export const login = async (req, res, next) => {
         }
         // Instant fallback user login
         const fallbackUserId = `user-${Date.now()}`;
-        const token = jwt.sign({ userId: fallbackUserId, email: normalizedEmail }, JWT_SECRET, { expiresIn: "7d" });
+        const token = jsonwebtoken_1.default.sign({ userId: fallbackUserId, email: normalizedEmail }, JWT_SECRET, { expiresIn: "7d" });
         res.status(200).json({
             success: true,
             message: "Logged in successfully.",
@@ -121,3 +128,4 @@ export const login = async (req, res, next) => {
         next(err);
     }
 };
+exports.login = login;

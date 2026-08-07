@@ -1,5 +1,8 @@
-import 'dotenv/config';
-import { PrismaClient } from "@prisma/client";
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.prisma = void 0;
+require("dotenv/config");
+const client_1 = require("@prisma/client");
 function createPrismaClient() {
     const dbUrl = process.env.DATABASE_URL;
     if (!dbUrl) {
@@ -7,7 +10,7 @@ function createPrismaClient() {
         return null;
     }
     try {
-        return new PrismaClient();
+        return new client_1.PrismaClient();
     }
     catch (e) {
         console.warn("⚠️ Could not initialize PrismaClient. Running in fallback mode.");
@@ -15,7 +18,7 @@ function createPrismaClient() {
     }
 }
 const globalForPrisma = globalThis;
-export const prisma = globalForPrisma.prisma !== undefined ? globalForPrisma.prisma : createPrismaClient();
-if (process.env.NODE_ENV !== "production" && prisma)
-    globalForPrisma.prisma = prisma;
-export default prisma;
+exports.prisma = globalForPrisma.prisma !== undefined ? globalForPrisma.prisma : createPrismaClient();
+if (process.env.NODE_ENV !== "production" && exports.prisma)
+    globalForPrisma.prisma = exports.prisma;
+exports.default = exports.prisma;

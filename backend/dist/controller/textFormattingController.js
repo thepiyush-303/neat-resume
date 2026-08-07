@@ -1,9 +1,12 @@
-import { GoogleGenAI } from "@google/genai";
-import { FORMATTING_PROMPT } from "../utils/prompts";
-import { PortfolioSchema } from "../types/llmResponseFormat";
-import { zodToJsonSchema } from "zod-to-json-schema";
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-export const formatResumeData = async (req, res, next) => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.formatResumeData = void 0;
+const genai_1 = require("@google/genai");
+const prompts_1 = require("../utils/prompts");
+const llmResponseFormat_1 = require("../types/llmResponseFormat");
+const zod_to_json_schema_1 = require("zod-to-json-schema");
+const ai = new genai_1.GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const formatResumeData = async (req, res, next) => {
     try {
         // console.log(req.body)
         const { rawText } = req.body;
@@ -13,12 +16,12 @@ export const formatResumeData = async (req, res, next) => {
             return;
         }
         console.log("Sending text to Gemini for formatting...");
-        const geminiJsonSchema = zodToJsonSchema(PortfolioSchema);
+        const geminiJsonSchema = (0, zod_to_json_schema_1.zodToJsonSchema)(llmResponseFormat_1.PortfolioSchema);
         const response = await ai.models.generateContent({
             model: "gemini-2.5-flash",
             contents: `Here is the raw resume text:\n\n${rawText}`,
             config: {
-                systemInstruction: FORMATTING_PROMPT,
+                systemInstruction: prompts_1.FORMATTING_PROMPT,
                 responseMimeType: "application/json",
                 responseSchema: geminiJsonSchema,
             }
@@ -41,3 +44,4 @@ export const formatResumeData = async (req, res, next) => {
         next(error);
     }
 };
+exports.formatResumeData = formatResumeData;
