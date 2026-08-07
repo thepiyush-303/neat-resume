@@ -3,11 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { usePortfolio } from '../context/PortfolioContext';
 import { useTheme } from '../context/ThemeContext';
 import {
-  Layout,
-  Grid3x3,
-  Terminal,
-  Palette,
-  Building2,
   ArrowLeft,
   Sun,
   Moon,
@@ -17,7 +12,6 @@ import {
   FileText,
   Phone,
   Mail,
-  MapPin,
   Globe,
   ExternalLink,
   Code2,

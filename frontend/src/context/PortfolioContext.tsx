@@ -269,7 +269,7 @@ export function normalizePortfolioData(data: any): PortfolioData {
       for (const item of d.skills) {
         if (['languages', 'frameworks_libraries', 'relevant_coursework', 'platforms', 'testing', 'frameworks', 'tools'].includes(item)) {
           if (currentCat) categories.push(currentCat);
-          const formattedCat = item.replace('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
+          const formattedCat = item.replace('_', ' ').replace(/\b\w/g, (c: string) => c.toUpperCase());
           currentCat = { category: formattedCat, items: [] };
         } else if (currentCat) {
           currentCat.items.push(item);
