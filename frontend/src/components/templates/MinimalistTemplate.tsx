@@ -12,116 +12,164 @@ export const MinimalistTemplate: React.FC = () => {
   const achievements = (d.achievements ?? []).filter(Boolean);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#fff', fontFamily: "'Inter', sans-serif", color: '#111' }}>
-      <div style={{ maxWidth: '100%', margin: '0 auto', padding: '60px 48px' }}>
-
-        {/* Header */}
-        <div style={{ marginBottom: 48 }}>
-          <h1 style={{ fontSize: 40, fontWeight: 800, margin: 0, letterSpacing: -1, color: '#0f0f0f' }}>{p.name}</h1>
-          <p style={{ fontSize: 18, color: '#6b6b80', marginTop: 6, marginBottom: 20, fontWeight: 400 }}>{p.role}</p>
-
-          {/* Contact row */}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 20px', fontSize: 13, color: '#6b6b80', marginBottom: 20 }}>
-            {p.email && <a href={`mailto:${p.email}`} style={{ color: '#4f46e5', textDecoration: 'none' }}>✉ {p.email}</a>}
-            {p.phone && <span>📞 {p.phone}</span>}
-            {p.location && <span>📍 {p.location}</span>}
-            {p.github && <a href={p.github} target="_blank" rel="noreferrer" style={{ color: '#4f46e5', textDecoration: 'none' }}>⌥ GitHub</a>}
-            {p.linkedin && <a href={p.linkedin} target="_blank" rel="noreferrer" style={{ color: '#4f46e5', textDecoration: 'none' }}>in LinkedIn</a>}
-          </div>
-          {p.bio && <p style={{ fontSize: 15, lineHeight: 1.7, color: '#444', maxWidth: 600 }}>{p.bio}</p>}
+    <div style={{ minHeight: '100vh', background: '#ffffff', fontFamily: "'Inter', sans-serif" }}>
+      
+      {/* Navbar */}
+      <nav style={{ padding: '24px 48px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: '#f8f9fa' }}>
+        <div style={{ fontWeight: 800, fontSize: 22, color: '#111' }}>
+          artfolio<span style={{ color: '#4f46e5' }}>↗</span>
         </div>
+        <div style={{ display: 'flex', gap: 24, fontSize: 13, fontWeight: 500, color: '#4b5563' }}>
+          <span>About</span>
+          <span>Skills</span>
+          <span>Education</span>
+          <span>Experience</span>
+          <span>Projects</span>
+        </div>
+        <div>
+          <button style={{ width: 44, height: 24, borderRadius: 12, background: '#1f2937', position: 'relative', border: 'none', cursor: 'pointer' }}>
+            <span style={{ position: 'absolute', top: 2, right: 2, width: 20, height: 20, borderRadius: '50%', background: '#fff' }} />
+          </button>
+        </div>
+      </nav>
 
-        <hr style={{ border: 'none', borderTop: '1px solid #eee', marginBottom: 40 }} />
+      {/* Hero Section (Light Gray) */}
+      <header style={{ background: '#f8f9fa', padding: '80px 48px 100px', textAlign: 'center' }}>
+        <h1 style={{ 
+          fontSize: 'clamp(4rem, 10vw, 8rem)', 
+          fontWeight: 900, 
+          color: '#111', 
+          lineHeight: 1.1, 
+          letterSpacing: '0.05em',
+          textTransform: 'uppercase',
+          margin: '0 auto 24px',
+          maxWidth: 1200,
+          wordBreak: 'break-word'
+        }}>
+          {p.name}
+        </h1>
+        <p style={{ fontSize: 20, color: '#374151', margin: '0 0 16px', fontWeight: 500 }}>
+          {p.role}{education[0]?.institution ? ` at ${education[0].institution}` : ''}
+        </p>
+        <p style={{ fontSize: 16, color: '#4b5563', maxWidth: 800, margin: '0 auto 32px', lineHeight: 1.6 }}>
+          {p.bio}
+        </p>
+        <a href="#" style={{ fontSize: 15, color: '#111', textDecoration: 'underline', fontWeight: 500, textUnderlineOffset: 4 }}>
+          Resume
+        </a>
+      </header>
 
-        {/* Experience */}
-        {experience.length > 0 && (
-          <section style={{ marginBottom: 48 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#9999b0', marginBottom: 24 }}>Experience</h2>
-            {experience.map((e, i) => (
-              <div key={i} style={{ marginBottom: 32 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 16, color: '#111' }}>{e.role}</div>
-                    <div style={{ fontSize: 14, color: '#666', marginTop: 2 }}>{e.company}{e.location ? ` · ${e.location}` : ''}</div>
-                  </div>
-                  <span style={{ fontSize: 13, color: '#999', whiteSpace: 'nowrap', marginLeft: 16 }}>{e.startDate} – {e.endDate}</span>
-                </div>
-                {(e.bullets ?? []).length > 0 && (
-                  <ul style={{ margin: '12px 0 0', padding: '0 0 0 18px' }}>
-                    {(e.bullets ?? []).map((b, j) => (
-                      <li key={j} style={{ fontSize: 14, color: '#555', lineHeight: 1.7, marginBottom: 4 }}>{b}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
+      {/* Main Content (White) */}
+      <main style={{ padding: '80px 48px', maxWidth: 1000, margin: '0 auto' }}>
+        
+        {/* About */}
+        {p.bio && (
+          <section style={{ marginBottom: 80 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111', marginBottom: 24 }}>About</h2>
+            <p style={{ fontSize: 16, color: '#4b5563', lineHeight: 1.8 }}>{p.bio}</p>
           </section>
         )}
 
         {/* Education */}
         {education.length > 0 && (
-          <section style={{ marginBottom: 48 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#9999b0', marginBottom: 24 }}>Education</h2>
-            {education.map((e, i) => (
-              <div key={i} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: '#111' }}>{e.degree}</div>
-                  <div style={{ fontSize: 14, color: '#666', marginTop: 2 }}>{e.institution}{e.location ? ` · ${e.location}` : ''}</div>
-                  {e.gpa && <div style={{ fontSize: 13, color: '#888', marginTop: 2 }}>GPA: {e.gpa}</div>}
+          <section style={{ marginBottom: 80 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111', marginBottom: 32 }}>Education</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 40 }}>
+              {education.map((e, i) => (
+                <div key={i}>
+                  <h3 style={{ fontSize: 32, fontWeight: 800, color: '#111', margin: '0 0 12px' }}>{e.institution}</h3>
+                  <div style={{ fontSize: 18, color: '#374151', fontWeight: 500, marginBottom: 8 }}>{e.degree}</div>
+                  <div style={{ fontSize: 15, color: '#6b7280' }}>{e.startDate} – {e.endDate} {e.location ? `· ${e.location}` : ''}</div>
                 </div>
-                <span style={{ fontSize: 13, color: '#999', whiteSpace: 'nowrap', marginLeft: 16 }}>{e.startDate} – {e.endDate}</span>
-              </div>
-            ))}
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Experience */}
+        {experience.length > 0 && (
+          <section style={{ marginBottom: 80 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111', marginBottom: 32 }}>Experience</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 48 }}>
+              {experience.map((e, i) => (
+                <div key={i}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 12, flexWrap: 'wrap', gap: 12 }}>
+                    <h3 style={{ fontSize: 24, fontWeight: 800, color: '#111', margin: 0 }}>{e.role}</h3>
+                    <span style={{ fontSize: 15, color: '#6b7280', fontWeight: 500 }}>{e.startDate} – {e.endDate}</span>
+                  </div>
+                  <div style={{ fontSize: 18, color: '#4f46e5', fontWeight: 600, marginBottom: 16 }}>
+                    {e.company} {e.location ? <span style={{ color: '#9ca3af', fontWeight: 400 }}>· {e.location}</span> : ''}
+                  </div>
+                  <ul style={{ margin: 0, padding: '0 0 0 20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+                    {(e.bullets ?? []).map((b, j) => (
+                      <li key={j} style={{ fontSize: 16, color: '#4b5563', lineHeight: 1.7 }}>{b}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
         {/* Projects */}
         {projects.length > 0 && (
-          <section style={{ marginBottom: 48 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#9999b0', marginBottom: 24 }}>Projects</h2>
-            {projects.map((pr, i) => (
-              <div key={i} style={{ marginBottom: 28 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 6 }}>
-                  <div style={{ fontWeight: 700, fontSize: 15, color: '#111' }}>{pr.name}</div>
-                  {pr.links?.github && <a href={pr.links.github} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#4f46e5', textDecoration: 'none' }}>↗ GitHub</a>}
-                  {pr.links?.live && <a href={pr.links.live} target="_blank" rel="noreferrer" style={{ fontSize: 12, color: '#4f46e5', textDecoration: 'none' }}>↗ Live</a>}
+          <section style={{ marginBottom: 80 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111', marginBottom: 32 }}>Projects</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))', gap: 32 }}>
+              {projects.map((pr, i) => (
+                <div key={i} style={{ padding: 32, background: '#f8f9fa', borderRadius: 24 }}>
+                  <h3 style={{ fontSize: 22, fontWeight: 800, color: '#111', margin: '0 0 12px' }}>{pr.name}</h3>
+                  <p style={{ fontSize: 15, color: '#4b5563', lineHeight: 1.7, marginBottom: 24 }}>{pr.description}</p>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                    {(pr.techStack ?? []).map((t, j) => (
+                      <span key={j} style={{ fontSize: 13, padding: '6px 14px', borderRadius: 20, border: '1px solid #e5e7eb', color: '#374151', fontWeight: 500 }}>
+                        {t}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <p style={{ fontSize: 14, color: '#555', lineHeight: 1.6, margin: '0 0 10px' }}>{pr.description}</p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-                  {(pr.techStack ?? []).map((t, j) => (
-                    <span key={j} style={{ fontSize: 12, padding: '3px 10px', borderRadius: 4, background: '#f0f0f8', color: '#555' }}>{t}</span>
-                  ))}
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </section>
         )}
 
         {/* Skills */}
         {skills.length > 0 && (
-          <section style={{ marginBottom: 48 }}>
-            <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#9999b0', marginBottom: 24 }}>Skills</h2>
-            {skills.map((s, i) => (
-              <div key={i} style={{ marginBottom: 12, fontSize: 14 }}>
-                <span style={{ fontWeight: 600, color: '#333' }}>{s.category}: </span>
-                <span style={{ color: '#666' }}>{(s.items ?? []).join(' · ')}</span>
-              </div>
-            ))}
+          <section style={{ marginBottom: 80 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111', marginBottom: 32 }}>Skills</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+              {skills.map((s, i) => (
+                <div key={i} style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'baseline', gap: 16 }}>
+                  <h3 style={{ fontSize: 18, fontWeight: 700, color: '#111', margin: 0, width: 200, flexShrink: 0 }}>{s.category}</h3>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                    {(s.items ?? []).map((item, j) => (
+                      <span key={j} style={{ fontSize: 16, color: '#4b5563' }}>{item}{j < s.items.length - 1 ? ' •' : ''}</span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </section>
         )}
 
         {/* Achievements */}
         {achievements.length > 0 && (
-          <section>
-            <h2 style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#9999b0', marginBottom: 24 }}>Achievements</h2>
-            <ul style={{ padding: '0 0 0 18px', margin: 0 }}>
+          <section style={{ marginBottom: 80 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 800, color: '#111', marginBottom: 32 }}>Achievements</h2>
+            <ul style={{ margin: 0, padding: '0 0 0 20px', display: 'flex', flexDirection: 'column', gap: 16 }}>
               {achievements.map((a, i) => (
-                <li key={i} style={{ fontSize: 14, color: '#555', lineHeight: 1.7, marginBottom: 6 }}>{a}</li>
+                <li key={i} style={{ fontSize: 16, color: '#4b5563', lineHeight: 1.7 }}>{a}</li>
               ))}
             </ul>
           </section>
         )}
-      </div>
+
+      </main>
+      
+      {/* Footer */}
+      <footer style={{ padding: '40px', textAlign: 'center', color: '#9ca3af', fontSize: 14, background: '#f8f9fa' }}>
+        © {new Date().getFullYear()} {p.name}. Built with artfolio.
+      </footer>
     </div>
   );
 };
