@@ -1,155 +1,114 @@
 import React from 'react';
-import { GithubIcon, LinkedinIcon } from '../components/SocialIcons';
 import { useNavigate } from 'react-router-dom';
-import { Sparkles, Zap, Shield, Layers, ArrowRight } from 'lucide-react';
-
-const features = [
-  { icon: Zap, title: 'Instant Extraction', desc: 'Upload a PDF — Gemini AI parses every field in seconds.' },
-  { icon: Layers, title: '5 Unique Templates', desc: 'From minimalist to bento grid, pick a design that matches your vibe.' },
-  { icon: Shield, title: 'Secure & Private', desc: 'Your resume data is encrypted and never stored without your consent.' },
-];
+import { ArrowRight, Trophy, Star, Users, Gift, ArrowUpRight } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen relative overflow-hidden" style={{ background: 'var(--color-bg)' }}>
-      {/* Ambient background blobs */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 -left-32 w-[600px] h-[600px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%)' }} />
-        <div className="absolute top-1/2 -right-48 w-[500px] h-[500px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.1) 0%, transparent 70%)' }} />
-        <div className="absolute bottom-0 left-1/3 w-[400px] h-[400px] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(167,139,250,0.08) 0%, transparent 70%)' }} />
+    <div className="min-h-screen flex flex-col bg-white text-gray-900 font-sans relative overflow-x-hidden selection:bg-indigo-500 selection:text-white">
+      {/* Soft background ambient gradient glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[550px] pointer-events-none overflow-hidden z-0">
+        <div 
+          className="absolute top-[-100px] left-1/2 -translate-x-1/2 w-[900px] h-[500px] rounded-full opacity-60 blur-[100px]"
+          style={{ background: 'radial-gradient(circle, rgba(192, 186, 255, 0.45) 0%, rgba(235, 233, 254, 0.25) 50%, transparent 80%)' }}
+        />
       </div>
 
-      {/* Nav */}
-      <nav className="relative z-10 flex items-center justify-between px-6 py-5 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #38bdf8)' }}>
-            <Sparkles className="w-4 h-4 text-white" />
+      {/* ── Top Navigation Bar ── */}
+      <header className="relative z-10 w-full border-b border-gray-100/80 bg-white/70 backdrop-blur-md sticky top-0">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          
+          {/* Logo */}
+          <button 
+            onClick={() => navigate('/')} 
+            className="flex items-center gap-1.5 text-2xl font-black tracking-tight text-gray-950 hover:opacity-90 transition-opacity"
+          >
+            <span>artfolio</span>
+            <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center text-white font-bold text-xs ml-0.5 shadow-sm shadow-indigo-400/40">
+              <ArrowUpRight className="w-3.5 h-3.5 stroke-[3]" />
+            </div>
+          </button>
+
+          {/* Navigation Links */}
+          <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-600">
+            <a href="#features" className="hover:text-gray-950 transition-colors">Features</a>
+            <a href="#how-it-works" className="hover:text-gray-950 transition-colors">How It Works</a>
+            <a href="#reviews" className="hover:text-gray-950 transition-colors">Reviews</a>
+          </nav>
+
+          {/* Action Buttons */}
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate('/auth?mode=login')}
+              className="text-sm font-semibold text-gray-700 hover:text-gray-950 px-3 py-2 transition-colors"
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-md shadow-indigo-600/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              Create Portfolio <ArrowRight className="w-4 h-4" />
+            </button>
           </div>
-          <span className="text-lg font-bold text-white">NeatResume</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <button id="nav-signin"
-            onClick={() => navigate('/auth?mode=login')}
-            className="px-4 py-2 text-sm font-medium rounded-lg transition-all"
-            style={{ color: 'var(--color-text-muted)' }}
-            onMouseEnter={e => (e.currentTarget.style.color = 'white')}
-            onMouseLeave={e => (e.currentTarget.style.color = 'var(--color-text-muted)')}>
-            Sign In
-          </button>
-          <button id="nav-signup"
-            onClick={() => navigate('/auth?mode=register')}
-            className="px-5 py-2 text-sm font-semibold text-white rounded-xl transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 4px 20px rgba(99,102,241,0.4)' }}>
-            Get Started
-          </button>
-        </div>
-      </nav>
 
-      {/* Hero */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-32 text-center">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium mb-8 animate-fade-up"
-          style={{ background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.3)', color: '#a78bfa', animationDelay: '0.1s' }}>
-          <Sparkles className="w-3.5 h-3.5" />
-          Powered by Gemini 2.5 Flash
+        </div>
+      </header>
+
+      {/* ── Hero Section ── */}
+      <main className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto px-6 pt-16 pb-24 text-center">
+        
+        {/* Top Badge Pill */}
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold text-indigo-700 bg-indigo-50/80 border border-indigo-100 shadow-sm mb-8 animate-fade-in">
+          <Trophy className="w-3.5 h-3.5 text-indigo-600" />
+          <span>4700+ portfolios built and counting</span>
         </div>
 
-        <h1 className="text-6xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight mb-8 animate-fade-up"
-          style={{ animationDelay: '0.2s' }}>
-          <span className="text-white">Your Resume,</span><br />
-          <span className="gradient-text">Beautifully Rebuilt</span>
+        {/* Hero Main Heading */}
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-gray-950 leading-[1.08] mb-6">
+          Your resume,<br />
+          <span className="bg-gradient-to-r from-indigo-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+            as a live website
+          </span><br />
+          in minutes.
         </h1>
 
-        <p className="text-xl md:text-2xl max-w-2xl mx-auto mb-12 animate-fade-up"
-          style={{ color: 'var(--color-text-muted)', animationDelay: '0.3s', lineHeight: 1.6 }}>
-          Upload your PDF. Our AI extracts every detail and renders it across 5 stunning portfolio designs — instantly.
+        {/* Hero Subtitle */}
+        <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
+          Upload the resume you already have. Our AI builds you a portfolio site on one of 8 designs - live, shareable, and ready before your next application. No design skills, no blank canvas.
         </p>
 
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-up" style={{ animationDelay: '0.4s' }}>
-          <button id="hero-cta-primary"
-            onClick={() => navigate('/auth?mode=register')}
-            className="group flex items-center gap-2 px-8 py-4 text-base font-bold text-white rounded-2xl transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }}>
-            Build My Portfolio Free
+        {/* Primary CTA Button */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+          <button
+            onClick={() => navigate('/dashboard')}
+            className="flex items-center justify-center gap-2.5 px-8 py-4 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 group w-full sm:w-auto"
+          >
+            <span>Build my portfolio - free</span>
             <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
           </button>
-          <button id="hero-cta-secondary"
-            onClick={() => window.open('https://github.com/thepiyush-303/neat-resume', '_blank')}
-            className="flex items-center gap-2 px-8 py-4 text-base font-semibold rounded-2xl transition-all hover:scale-105"
-            style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', color: 'var(--color-text-muted)' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.5)'; e.currentTarget.style.color = 'white'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; e.currentTarget.style.color = 'var(--color-text-muted)'; }}>
-            <GithubIcon className="w-5 h-5" />
-            View on GitHub
-          </button>
         </div>
 
-        {/* Mock UI preview */}
-        <div className="relative mt-24 animate-fade-up" style={{ animationDelay: '0.6s' }}>
-          <div className="absolute inset-0 rounded-3xl" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(56,189,248,0.1))', filter: 'blur(40px)' }} />
-          <div className="relative rounded-3xl overflow-hidden" style={{ background: 'var(--color-surface)', border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-lg)' }}>
-            {/* Fake browser bar */}
-            <div className="flex items-center gap-2 px-4 py-3" style={{ borderBottom: '1px solid var(--color-border)' }}>
-              <div className="w-3 h-3 rounded-full bg-red-500/80" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
-              <div className="w-3 h-3 rounded-full bg-green-500/80" />
-              <div className="mx-auto flex items-center gap-2 px-4 py-1 rounded-md text-xs" style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-muted)', border: '1px solid var(--color-border)' }}>
-                🔒 neatresume.app/portfolio/preview
-              </div>
-            </div>
-            <div className="h-64 flex items-center justify-center">
-              <div className="text-center">
-                <div className="text-4xl mb-3">✨</div>
-                <p className="font-semibold text-white">Your portfolio renders here</p>
-                <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>Upload a resume to see the magic</p>
-              </div>
-            </div>
+        {/* Trust Badges */}
+        <div className="flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-medium text-gray-500">
+          <div className="flex items-center gap-1.5">
+            <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
+            <span className="text-gray-700 font-semibold">4.9/5</span> rating
+          </div>
+          <span className="text-gray-300">•</span>
+          <div className="flex items-center gap-1.5">
+            <Users className="w-4 h-4 text-gray-400" />
+            <span className="text-gray-700 font-semibold">5100+</span> users
+          </div>
+          <span className="text-gray-300">•</span>
+          <div className="flex items-center gap-1.5">
+            <Gift className="w-4 h-4 text-gray-400" />
+            <span>Free to publish</span>
           </div>
         </div>
-      </section>
 
-      {/* Features */}
-      <section className="relative z-10 max-w-7xl mx-auto px-6 pb-32">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Everything you need to stand out</h2>
-          <p className="text-lg" style={{ color: 'var(--color-text-muted)' }}>Built for developers who deserve a portfolio that matches their skills.</p>
-        </div>
-        <div className="grid md:grid-cols-3 gap-6">
-          {features.map((feature, i) => (
-            <div key={i} className="glass rounded-2xl p-8 transition-all group hover:-translate-y-1"
-              style={{ animationDelay: `${i * 0.1}s`, transitionDuration: '300ms' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(99,102,241,0.4)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--color-border)'; }}>
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-6"
-                style={{ background: 'var(--color-brand-muted)' }}>
-                <feature.icon className="w-6 h-6" style={{ color: 'var(--color-brand-light)' }} />
-              </div>
-              <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
-              <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>{feature.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA footer */}
-      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-24 text-center">
-        <div className="glass rounded-3xl p-12"
-          style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.08), rgba(56,189,248,0.05))' }}>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to impress recruiters?</h2>
-          <p className="text-lg mb-8" style={{ color: 'var(--color-text-muted)' }}>Join thousands of developers who built their portfolio in under 2 minutes.</p>
-          <button id="footer-cta"
-            onClick={() => navigate('/auth?mode=register')}
-            className="inline-flex items-center gap-2 px-8 py-4 text-base font-bold text-white rounded-2xl transition-all hover:scale-105"
-            style={{ background: 'linear-gradient(135deg, #6366f1, #4f46e5)', boxShadow: '0 8px 32px rgba(99,102,241,0.4)' }}>
-            Get Started for Free <ArrowRight className="w-5 h-5" />
-          </button>
-        </div>
-      </section>
+      </main>
     </div>
   );
 };

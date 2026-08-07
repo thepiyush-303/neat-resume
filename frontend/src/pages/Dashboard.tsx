@@ -60,7 +60,7 @@ const Dashboard: React.FC = () => {
       formData.append('resume', file);
 
       const uploadRes = await axios.post(`${API}/api/resume/upload`, formData, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
       if (!uploadRes.data.success) throw new Error(uploadRes.data.message);
@@ -70,7 +70,12 @@ const Dashboard: React.FC = () => {
       const llmRes = await axios.post(
         `${API}/api/format/llm`,
         { rawText },
-        { headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } }
+        {
+          headers: {
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            'Content-Type': 'application/json',
+          },
+        }
       );
 
       if (!llmRes.data.success) throw new Error(llmRes.data.message);
