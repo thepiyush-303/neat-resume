@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Trophy, Star, Users, Gift, ArrowUpRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -26,7 +26,7 @@ const LandingPage: React.FC = () => {
           >
             <span>artfolio</span>
             <div className="w-6 h-6 rounded-md bg-indigo-600 flex items-center justify-center text-white font-bold text-xs ml-0.5 shadow-sm shadow-indigo-400/40">
-              <ArrowUpRight className="w-3.5 h-3.5 stroke-[3]" />
+              <ArrowRight className="w-3.5 h-3.5 stroke-[3]" />
             </div>
           </button>
 
@@ -59,11 +59,7 @@ const LandingPage: React.FC = () => {
       {/* ── Hero Section ── */}
       <main className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-4xl mx-auto px-6 pt-16 pb-24 text-center">
         
-        {/* Top Badge Pill */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold text-indigo-700 bg-indigo-50/80 border border-indigo-100 shadow-sm mb-8 animate-fade-in">
-          <Trophy className="w-3.5 h-3.5 text-indigo-600" />
-          <span>4700+ portfolios built and counting</span>
-        </div>
+
 
         {/* Hero Main Heading */}
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-gray-950 leading-[1.08] mb-6">
@@ -86,27 +82,11 @@ const LandingPage: React.FC = () => {
             className="flex items-center justify-center gap-2.5 px-8 py-4 text-base font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-600/30 transition-all hover:scale-105 active:scale-95 group w-full sm:w-auto"
           >
             <span>Build my portfolio - free</span>
-            <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
           </button>
         </div>
 
-        {/* Trust Badges */}
-        <div className="flex flex-wrap items-center justify-center gap-6 text-xs sm:text-sm font-medium text-gray-500">
-          <div className="flex items-center gap-1.5">
-            <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-            <span className="text-gray-700 font-semibold">4.9/5</span> rating
-          </div>
-          <span className="text-gray-300">•</span>
-          <div className="flex items-center gap-1.5">
-            <Users className="w-4 h-4 text-gray-400" />
-            <span className="text-gray-700 font-semibold">5100+</span> users
-          </div>
-          <span className="text-gray-300">•</span>
-          <div className="flex items-center gap-1.5">
-            <Gift className="w-4 h-4 text-gray-400" />
-            <span>Free to publish</span>
-          </div>
-        </div>
+
 
       </main>
     </div>

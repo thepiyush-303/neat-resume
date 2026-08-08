@@ -26,6 +26,11 @@ const Dashboard: React.FC = () => {
   const [errorMsg, setErrorMsg] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
+  React.useEffect(() => {
+    document.documentElement.setAttribute('data-theme', 'light');
+    localStorage.setItem('theme', 'light');
+  }, []);
+
   const handleFile = (f: File) => {
     if (f.type !== 'application/pdf') {
       setErrorMsg('Only PDF files are supported.');

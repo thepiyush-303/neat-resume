@@ -41,8 +41,8 @@ const StandardTemplate: React.FC = () => {
         <div style={{ width: 100, height: 100, borderRadius: '50%', background: 'linear-gradient(135deg,#6366f1,#a855f7)', margin: '0 auto 24px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 40, fontWeight: 900, color: '#fff', boxShadow: '0 8px 30px rgba(99,102,241,0.3)' }}>
           {p.name?.charAt(0) || 'U'}
         </div>
-        <h1 style={{ fontSize: 48, fontWeight: 900, color: '#111', margin: 0, letterSpacing: -2 }}>{p.name}</h1>
-        <p style={{ fontSize: 18, color: '#6b7280', marginTop: 8, fontWeight: 500 }}>
+        <h1 style={{ fontSize: 48, fontWeight: 900, color: '#111', margin: '0 0 8px 0', letterSpacing: -2, lineHeight: 1.1 }}>{p.name}</h1>
+        <p style={{ fontSize: 18, color: '#6b7280', margin: 0, fontWeight: 500 }}>
           {p.role}{education[0]?.institution ? ` · ${education[0].institution}` : ''}
         </p>
         <p style={{ fontSize: 15, color: '#9ca3af', marginTop: 12, maxWidth: 700, margin: '12px auto 0', lineHeight: 1.7 }}>{p.bio}</p>
@@ -212,6 +212,65 @@ export const TemplateSelection: React.FC = () => {
           <div className="grid grid-cols-2 gap-3">
             {LAYOUTS.map((tmpl) => {
               const isSelected = activeTemplate === tmpl.id;
+              
+              // Generate custom thumbnail CSS based on template ID
+              let thumbnailInner = null;
+              if (tmpl.id === 'standard') {
+                thumbnailInner = (
+                  <div className="w-full flex-1 flex flex-col items-center">
+                    <div className="w-6 h-6 rounded-full bg-indigo-300 mb-1" />
+                    <div className="w-14 h-1.5 bg-gray-400 rounded mb-1" />
+                    <div className="w-20 h-1 bg-gray-300 rounded mb-2" />
+                    <div className="w-full h-8 bg-white border border-gray-100 rounded-sm" />
+                  </div>
+                );
+              } else if (tmpl.id === 'minimalist') {
+                thumbnailInner = (
+                  <div className="w-full flex-1 flex flex-col items-center justify-start bg-gray-50 pt-2">
+                    <div className="w-24 h-3 bg-gray-800 rounded-sm mb-1" />
+                    <div className="w-16 h-1 bg-gray-400 rounded mb-3" />
+                    <div className="w-full h-8 bg-white border-t border-gray-200 p-1">
+                      <div className="w-10 h-1 bg-gray-300 mb-1 rounded" />
+                      <div className="w-full h-4 bg-gray-100 rounded" />
+                    </div>
+                  </div>
+                );
+              } else if (tmpl.id === 'bento') {
+                thumbnailInner = (
+                  <div className="w-full flex-1 grid grid-cols-2 gap-1 p-1">
+                    <div className="col-span-2 space-y-1">
+                      <div className="w-6 h-6 rounded-full bg-indigo-400" />
+                      <div className="h-1.5 w-12 bg-gray-400 rounded" />
+                    </div>
+                    <div className="h-6 bg-white border border-gray-200 rounded-sm" />
+                    <div className="h-6 bg-white border border-gray-200 rounded-sm" />
+                  </div>
+                );
+              } else if (tmpl.id === 'creative') {
+                thumbnailInner = (
+                  <div className="w-full flex-1 bg-gray-900 rounded-sm flex flex-col items-center justify-center p-1">
+                    <div className="w-16 h-6 border border-gray-700 bg-gray-800 rounded flex items-center justify-center">
+                      <div className="w-8 h-1 bg-indigo-500 rounded" />
+                    </div>
+                  </div>
+                );
+              } else if (tmpl.id === 'corporate') {
+                thumbnailInner = (
+                  <div className="w-full flex-1 flex gap-1 p-0.5">
+                    <div className="w-1/3 h-full bg-white border border-gray-200 rounded-sm flex flex-col items-center p-1">
+                      <div className="w-4 h-4 rounded-full bg-indigo-400 mb-1" />
+                      <div className="w-full h-0.5 bg-gray-300 rounded mb-0.5" />
+                      <div className="w-4/5 h-0.5 bg-gray-200 rounded mb-1" />
+                      <div className="w-full h-2 bg-indigo-500 rounded-sm" />
+                    </div>
+                    <div className="w-2/3 flex flex-col gap-1">
+                      <div className="w-full h-3 bg-white border border-gray-200 rounded-sm" />
+                      <div className="w-full flex-1 bg-white border border-gray-200 rounded-sm" />
+                    </div>
+                  </div>
+                );
+              }
+
               return (
                 <button
                   key={tmpl.id}
@@ -222,10 +281,8 @@ export const TemplateSelection: React.FC = () => {
                       : 'border-gray-200 bg-white hover:border-indigo-300 hover:bg-gray-50'
                   }`}
                 >
-                  <div className="w-full h-20 rounded-lg bg-gray-100 mb-2 border border-gray-200 flex flex-col p-2 overflow-hidden group-hover:scale-[1.02] transition-transform">
-                    <div className="w-7 h-7 rounded-full bg-indigo-200 mb-1" />
-                    <div className="w-14 h-1.5 bg-gray-300 rounded mb-1" />
-                    <div className="w-16 h-1 bg-gray-200 rounded" />
+                  <div className="w-full h-20 rounded-lg bg-gray-100 mb-2 border border-gray-200 shadow-sm overflow-hidden flex flex-col transition-transform group-hover:scale-[1.02]">
+                    {thumbnailInner}
                   </div>
                   <span className={`text-xs font-bold ${isSelected ? 'text-indigo-600' : 'text-gray-800'}`}>
                     {tmpl.name}
