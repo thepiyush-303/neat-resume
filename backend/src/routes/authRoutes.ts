@@ -74,6 +74,7 @@ router.post('/signup', authLimiter, async (req, res) => {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.issues });
     } else {
+      console.error('[signup error]', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }
@@ -118,6 +119,7 @@ router.post('/login', authLimiter, async (req, res) => {
     if (error instanceof z.ZodError) {
       res.status(400).json({ error: error.issues });
     } else {
+      console.error('[login error]', error);
       res.status(500).json({ error: 'Internal server error' });
     }
   }

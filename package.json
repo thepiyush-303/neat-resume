@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev:frontend": "npm run dev --prefix frontend",
-    "dev:backend": "npm run dev --prefix backend",
+    "dev:backend": "npm run db:push --prefix backend && npm run dev --prefix backend",
     "dev:parser": "cd parser-service && ./venv/bin/python main.py",
     "dev": "concurrently -c \"cyan,magenta,yellow\" \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:parser\""
   },
