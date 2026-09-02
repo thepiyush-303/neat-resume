@@ -6,6 +6,8 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import { TemplateSelection } from './pages/TemplateSelection';
+import UploadPage from './pages/UploadPage';
+import Editor from './pages/Editor';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -17,10 +19,12 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthPage />} />
-              
+
               <Route element={<ProtectedRoute />}>
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/templates" element={<TemplateSelection />} />
+                <Route path="/resumes/upload" element={<UploadPage />} />
+                <Route path="/resumes/:id/edit" element={<Editor />} />
               </Route>
             </Routes>
           </BrowserRouter>

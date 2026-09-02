@@ -1,4 +1,7 @@
 fastapi
-pdfplumber
 uvicorn
+pdfplumber
+python-docx
+google-generativeai
+pydantic
 python-multipart

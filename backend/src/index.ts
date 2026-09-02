@@ -22,7 +22,7 @@ app.use(express.json())
 app.use(cookieParser())
 
 app.use('/api/auth', authRoutes)
-app.use('/api/resume', resumeRouter)
+app.use('/api/resumes', resumeRouter)
 app.use('/api/format', formattingRouter)
 app.get('/', (req, res) =>{
     res.send("Hey, I am working")
