@@ -29,7 +29,7 @@ export default function DashboardLayout() {
         formData.append('resume', file);
         try {
 
-            const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+            const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
             const response = await fetch(`${API}/api/resume/upload`, {
                 method: 'POST',
                 body: formData
@@ -46,7 +46,7 @@ export default function DashboardLayout() {
               // console.log(parsedText)
               
               try{
-                const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+                const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
                 const llmResponse = await fetch(`${API}/api/format/llm`,{
                   method: 'POST',
                   headers: {
