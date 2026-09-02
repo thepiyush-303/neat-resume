@@ -1,4 +1,3 @@
-
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { PortfolioProvider } from './context/PortfolioContext';
@@ -7,6 +6,7 @@ import LandingPage from './pages/LandingPage';
 import AuthPage from './pages/AuthPage';
 import Dashboard from './pages/Dashboard';
 import { TemplateSelection } from './pages/TemplateSelection';
+import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -17,8 +17,11 @@ function App() {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthPage />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/templates" element={<TemplateSelection />} />
+              
+              <Route element={<ProtectedRoute />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/templates" element={<TemplateSelection />} />
+              </Route>
             </Routes>
           </BrowserRouter>
         </PortfolioProvider>
@@ -28,4 +31,3 @@ function App() {
 }
 
 export default App;
-

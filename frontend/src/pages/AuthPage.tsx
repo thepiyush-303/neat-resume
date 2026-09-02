@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { Sparkles, Eye, EyeOff, Loader2, Lock, Mail, CheckCircle2 } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
-
-const API = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { Sparkles, Eye, EyeOff, Loader2, Lock, Mail, User, CheckCircle2 } from 'lucide-react';
+import { useAuth, api } from '../context/AuthContext';
 
 const AuthPage: React.FC = () => {
   const [params] = useSearchParams();
   const [mode, setMode] = useState<'login' | 'register'>(
     params.get('mode') === 'register' ? 'register' : 'login'
   );
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
@@ -21,8 +19,8 @@ const AuthPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/dashboard');
-  }, [isAuthenticated, navigate]);
+    if (isAuthenticated) navigate(params.get('redirect') || '/dashboard');
+  }, [isAuthenticated, navigate, params]);
 
   useEffect(() => {
     setMode(params.get('mode') === 'register' ? 'register' : 'login');
@@ -34,23 +32,27 @@ const AuthPage: React.FC = () => {
     setLoading(true);
 
     try {
-      const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/register';
-      const { data } = await axios.post(`${API}${endpoint}`, { email, password });
-      if (data.success) {
-        login(data.token, data.user);
-        navigate('/dashboard');
+      const endpoint = mode === 'login' ? '/api/auth/login' : '/api/auth/signup';
+      const payload = mode === 'register' ? { name, email, password } : { email, password };
+      
+      const { data } = await api.post(endpoint, payload);
+      
+      if (data.accessToken && data.user) {
+        login(data.accessToken, data.user);
+        navigate(params.get('redirect') || '/dashboard');
         return;
       }
     } catch (err: any) {
-      // Fallback local auth for instant seamless access if backend DB is not connected locally
-      if (email && password.length >= 6) {
-        const mockToken = `mock-jwt-token-${Date.now()}`;
-        const mockUser = { id: `user-${Date.now()}`, email };
-        login(mockToken, mockUser);
-        navigate('/dashboard');
-        return;
+      if (err.response?.data?.error) {
+        const errorData = err.response.data.error;
+        if (Array.isArray(errorData)) {
+          setError(errorData.map(e => e.message).join(', '));
+        } else {
+          setError(errorData);
+        }
+      } else {
+        setError('Something went wrong. Please try again.');
       }
-      setError(err.response?.data?.message || 'Please enter a valid email and password (min 6 chars).');
     } finally {
       setLoading(false);
     }
@@ -139,6 +141,27 @@ const AuthPage: React.FC = () => {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             
+            {/* Name Field (Sign Up only) */}
+            {mode === 'register' && (
+              <div>
+                <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">
+                  Full Name
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    autoComplete="name"
+                    value={name}
+                    onChange={e => setName(e.target.value)}
+                    placeholder="Jane Doe"
+                    className="w-full px-4 py-3 pl-10 rounded-xl bg-slate-950 border border-slate-800 text-slate-100 text-sm font-medium placeholder-slate-500 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all"
+                  />
+                  <User className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                </div>
+              </div>
+            )}
+
             {/* Email Field */}
             <div>
               <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">

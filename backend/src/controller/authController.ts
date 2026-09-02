@@ -1,10 +1,9 @@
 import { Request, Response, NextFunction } from "express";
-import bcrypt from "bcrypt";
+import argon2 from "argon2";
 import jwt from "jsonwebtoken";
 import prisma from "../lib/prisma";
 
 const JWT_SECRET = process.env.JWT_SECRET || "supersecret_fallback_key";
-const SALT_ROUNDS = 10;
 
 // In-memory fallback user store for database-free deployments
 const memoryUsers = new Map<string, { id: string; email: string; passwordHash: string }>();
@@ -16,7 +15,7 @@ export const register = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const { email, password } = req.body;
+    const { email, password, name = "User" } = req.body;
 
     if (!email || !password) {
       res.status(400).json({ success: false, message: "Email and password are required." });
@@ -36,9 +35,9 @@ export const register = async (
           return;
         }
 
-        const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+        const hashedPassword = await argon2.hash(password);
         const user = await prisma.user.create({
-          data: { email, password: hashedPassword },
+          data: { email, name, passwordHash: hashedPassword },
         });
 
         const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
@@ -61,7 +60,7 @@ export const register = async (
       return;
     }
 
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    const hashedPassword = await argon2.hash(password);
     const userId = `user-${Date.now()}`;
     memoryUsers.set(normalizedEmail, { id: userId, email: normalizedEmail, passwordHash: hashedPassword });
 
@@ -95,7 +94,7 @@ export const login = async (
       try {
         const user = await prisma.user.findUnique({ where: { email } });
         if (user) {
-          const isPasswordValid = await bcrypt.compare(password, user.password);
+          const isPasswordValid = await argon2.verify(user.passwordHash, password);
           if (isPasswordValid) {
             const token = jwt.sign({ userId: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
             res.status(200).json({
@@ -116,7 +115,7 @@ export const login = async (
     const normalizedEmail = email.toLowerCase();
     const memUser = memoryUsers.get(normalizedEmail);
     if (memUser) {
-      const isPasswordValid = await bcrypt.compare(password, memUser.passwordHash);
+      const isPasswordValid = await argon2.verify(memUser.passwordHash, password);
       if (isPasswordValid) {
         const token = jwt.sign({ userId: memUser.id, email: memUser.email }, JWT_SECRET, { expiresIn: "7d" });
         res.status(200).json({

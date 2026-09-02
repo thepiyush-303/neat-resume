@@ -1,18 +1,22 @@
 import express from "express"
 import cors from "cors"
+import cookieParser from "cookie-parser"
 import resumeRouter from "./routes/resumeRoutes"
 import formattingRouter from "./routes/formattingRoutes"
+import authRoutes from "./routes/authRoutes"
 
 const app = express()
 
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  credentials: true
 }))
 app.use(express.json())
+app.use(cookieParser())
 
-
+app.use('/api/auth', authRoutes)
 app.use('/api/resume', resumeRouter)
 app.use('/api/format', formattingRouter)
 app.get('/', (req, res) =>{

@@ -1,0 +1,14 @@
+{
+  "name": "neatresume-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:backend": "npm run dev --prefix backend",
+    "dev:parser": "cd parser-service && ./venv/bin/python main.py",
+    "dev": "concurrently -c \"cyan,magenta,yellow\" \"npm run dev:frontend\" \"npm run dev:backend\" \"npm run dev:parser\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
