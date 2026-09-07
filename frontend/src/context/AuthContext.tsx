@@ -13,6 +13,7 @@ export interface AuthContextType {
   login: (token: string, userData: User) => void;
   logout: () => void;
   loading: boolean;
+  isInitialized: boolean;
   isAuthenticated: boolean;
 }
 
@@ -22,6 +23,7 @@ export const AuthContext = createContext<AuthContextType>({
   login: () => {},
   logout: () => {},
   loading: true,
+  isInitialized: false,
   isAuthenticated: false,
 });
 
@@ -36,6 +38,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
     const requestInterceptor = api.interceptors.request.use(
@@ -92,6 +95,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setAccessToken(null);
       } finally {
         setLoading(false);
+        setIsInitialized(true);
       }
     };
     initializeAuth();
@@ -113,7 +117,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, login, logout, loading, isAuthenticated: !!accessToken }}>
+    <AuthContext.Provider value={{ user, accessToken, login, logout, loading, isInitialized, isAuthenticated: !!accessToken }}>
       {children}
     </AuthContext.Provider>
   );

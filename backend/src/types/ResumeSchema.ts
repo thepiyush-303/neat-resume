@@ -6,7 +6,7 @@ import { z } from "zod";
 
 export const PersonalInfoSchema = z.object({
   fullName: z.string(),
-  email: z.string().email(),
+  email: z.string(),
   phone: z.string().optional().nullable(),
   location: z.string().optional().nullable(),
   linkedIn: z.string().optional().nullable(),
@@ -21,7 +21,7 @@ export const WorkExperienceSchema = z.object({
   startDate: z.string(),
   endDate: z.string().optional().nullable(),
   location: z.string().optional().nullable(),
-  bullets: z.array(z.string()).max(6),
+  bullets: z.array(z.string()),
 });
 
 export const EducationSchema = z.object({

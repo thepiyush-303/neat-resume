@@ -2,10 +2,10 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = () => {
-  const { user, loading, isAuthenticated } = useAuth();
+  const { user, loading, isInitialized, isAuthenticated } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  if (loading || !isInitialized) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-zinc-950">
         <div className="animate-pulse flex flex-col items-center">

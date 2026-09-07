@@ -187,7 +187,11 @@ export default function Editor() {
         setTemplateId(res.resume.templateId as TemplateId);
         setTitle(res.resume.title);
         setAtsScore(res.resume.atsScore);
-        lastSavedRef.current = JSON.stringify(res.resume.parsedData);
+        lastSavedRef.current = JSON.stringify({
+          data: res.resume.parsedData,
+          templateId: res.resume.templateId,
+          title: res.resume.title,
+        });
       })
       .catch(() => setError('Failed to load resume.'))
       .finally(() => setLoading(false));
@@ -204,17 +208,21 @@ export default function Editor() {
         title: t,
       });
       setAtsScore(res.resume.atsScore);
-      lastSavedRef.current = JSON.stringify(currentData);
+      lastSavedRef.current = JSON.stringify({
+        data: currentData,
+        templateId: tId,
+        title: t,
+      });
       setSaveStatus('saved');
     } catch {
       setSaveStatus('unsaved');
     }
   }, [id]);
 
-  // Auto-save on data change (debounced 1.5s, then every 30s)
+  // Auto-save on data change (debounced 1.5s)
   useEffect(() => {
     if (!data) return;
-    const serialized = JSON.stringify(data);
+    const serialized = JSON.stringify({ data, templateId, title });
     if (serialized === lastSavedRef.current) return;
     setSaveStatus('unsaved');
 
@@ -442,7 +450,7 @@ export default function Editor() {
                   <input
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-500 transition-all"
                     value={pr.techStack.join(', ')}
-                    onChange={e => updateProject(i, 'techStack', e.target.value.split(',').map(t => t.trim()).filter(Boolean))}
+                    onChange={e => updateProject(i, 'techStack', e.target.value.split(',').map(t => t.trimStart()))}
                   />
                 </div>
                 <Field label="GitHub URL" value={pr.github || ''} onChange={v => updateProject(i, 'github', v)} />
@@ -472,7 +480,7 @@ export default function Editor() {
                   <input
                     className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-sm text-zinc-100 outline-none focus:border-indigo-500 transition-all"
                     value={sg.items.join(', ')}
-                    onChange={e => updateSkill(i, 'items', e.target.value.split(',').map(t => t.trim()).filter(Boolean))}
+                    onChange={e => updateSkill(i, 'items', e.target.value.split(',').map(t => t.trimStart()))}
                   />
                 </div>
               </div>

@@ -109,7 +109,7 @@ Optionally delete `CLAUDE.md` from root if you no longer want Claude-specific in
 ## Feature 4 (Major) — GitHub Portfolio Deployment via OAuth + GitHub Pages/Vercel (MCP Architecture)
 
 ### Overview
-This is the largest and most architecturally significant feature. The goal: a user clicks **"Deploy Portfolio"** on a `ResumeCard` or in the Editor, authenticates via GitHub OAuth, and their resume is automatically converted to a portfolio site and deployed to GitHub Pages (or Vercel).
+This is the largest and most architecturally significant feature. The goal: a user clicks **"Deploy Portfolio"** Present in three dots on a `ResumeCard` or in the Editor, authenticates via GitHub OAuth, and their resume is automatically converted to a portfolio site and deployed to GitHub Pages (or Vercel).
 
 The approach uses an **MCP (Model-agnostic Control Protocol / micro-service orchestration)** pattern where distinct services handle each concern: OAuth handshake, portfolio generation, Git operations, and deployment.
 
