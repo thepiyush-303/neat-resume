@@ -145,7 +145,7 @@ function ResumeCard({
         <div className="absolute inset-0 bg-black/20 group-hover:bg-black/60 transition-colors duration-300" />
         
         {/* Hover action overlay */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 scale-95 group-hover:scale-100">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 scale-95 group-hover:scale-100">
           <Button 
             variant="secondary" 
             className="gap-2 shadow-lg hover:scale-105 pointer-events-auto transition-transform"
@@ -153,6 +153,19 @@ function ResumeCard({
           >
             <Pencil className="h-4 w-4" /> Open Editor
           </Button>
+          
+          {resume.portfolioUrl && (
+            <Button
+              variant="default"
+              className="gap-2 shadow-lg hover:scale-105 pointer-events-auto transition-transform bg-indigo-600 text-white hover:bg-indigo-500"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(resume.portfolioUrl!, '_blank');
+              }}
+            >
+              <Globe className="h-4 w-4" /> View Live Site
+            </Button>
+          )}
         </div>
 
         <div className="relative flex flex-col items-center gap-1 group-hover:opacity-0 transition-opacity duration-300">
