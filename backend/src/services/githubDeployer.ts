@@ -2,6 +2,9 @@ import { Octokit } from '@octokit/rest';
 import axios from 'axios';
 import { PrismaClient } from '@prisma/client';
 import { decryptToken } from '../utils/encryption';
+import fs from 'fs';
+import path from 'path';
+import Handlebars from 'handlebars';
 
 const prisma = new PrismaClient();
 
@@ -25,18 +28,19 @@ export class GitHubDeployer {
     });
     if (!user || !user.githubUsername) throw new Error("GitHub not connected");
 
-    // 2. Generate Portfolio via Python Service
-    const PARSER_SERVICE_URL = (process.env.PARSER_SERVICE_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
-    let generationResult;
+    // 2. Generate Portfolio locally via Handlebars
+    let htmlContent, cssContent;
     try {
-      const response = await axios.post(`${PARSER_SERVICE_URL}/generate-portfolio`, resume.parsedData);
-      generationResult = response.data;
+      const templateDir = path.join(__dirname, '..', 'templates');
+      const indexTemplate = fs.readFileSync(path.join(templateDir, 'index.html'), 'utf-8');
+      cssContent = fs.readFileSync(path.join(templateDir, 'styles.css'), 'utf-8');
+      
+      const compile = Handlebars.compile(indexTemplate);
+      htmlContent = compile({ data: resume.parsedData });
     } catch (e: any) {
-      console.error(e.response?.data || e.message);
-      throw new Error("Failed to generate portfolio files from parser service");
+      console.error('[Handlebars Generate]', e);
+      throw new Error("Failed to generate portfolio files locally");
     }
-
-    const { 'index.html': htmlContent, 'styles.css': cssContent } = generationResult.files;
 
     // 3. Create or Get Repository
     let repo;
