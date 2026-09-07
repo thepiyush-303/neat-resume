@@ -4,6 +4,8 @@ import cookieParser from "cookie-parser"
 import resumeRouter from "./routes/resumeRoutes"
 import formattingRouter from "./routes/formattingRoutes"
 import authRoutes from "./routes/authRoutes"
+import githubRoutes from "./routes/githubRoutes"
+import portfolioRoutes from "./routes/portfolioRoutes"
 
 const app = express()
 
@@ -26,6 +28,8 @@ app.use(cookieParser())
 app.use('/api/auth', authRoutes)
 app.use('/api/resumes', resumeRouter)
 app.use('/api/format', formattingRouter)
+app.use('/api/github', githubRoutes)
+app.use('/api/portfolio', portfolioRoutes)
 app.get('/', (req, res) =>{
     res.send("Hey, I am working")
 })

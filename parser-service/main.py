@@ -11,6 +11,7 @@ from google import genai
 from pydantic import BaseModel, ValidationError
 from typing import Optional, List
 from dotenv import load_dotenv
+from jinja2 import Environment, FileSystemLoader
 
 load_dotenv("../.env") # Try root .env first
 load_dotenv() # Then backend/parser specific .env
@@ -234,6 +235,30 @@ async def parse_resume(file: UploadFile = File(...)):
         "data": parsed.model_dump(),
         "confidence": confidence
     }
+
+# ─── Portfolio Builder ────────────────────────────────────────────────────────
+
+TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), "templates")
+jinja_env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
+
+@app.post("/generate-portfolio")
+async def generate_portfolio(data: ResumeData):
+    try:
+        with open(os.path.join(TEMPLATE_DIR, "styles.css"), "r", encoding="utf-8") as f:
+            css_content = f.read()
+            
+        template = jinja_env.get_template("index.html")
+        html_content = template.render(data=data.model_dump())
+        
+        return {
+            "success": True,
+            "files": {
+                "index.html": html_content,
+                "styles.css": css_content
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Portfolio generation failed: {str(e)}")
 
 # Backward compat alias
 @app.post("/extract")

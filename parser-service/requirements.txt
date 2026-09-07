@@ -6,3 +6,4 @@ google-genai
 python-dotenv
 pydantic
 python-multipart
+jinja2

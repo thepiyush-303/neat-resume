@@ -16,7 +16,10 @@ model User {
   updatedAt     DateTime       @updatedAt
   sessions      Session[]
   refreshTokens RefreshToken[]
-  resumes       Resume[]
+  resumes             Resume[]
+  githubAccessToken   String?
+  githubUsername      String?
+  githubConnectedAt   DateTime?
 }
 
 model Session {
@@ -48,5 +51,8 @@ model Resume {
   atsScore      Int?
   isDeleted     Boolean  @default(false)
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  updatedAt       DateTime @updatedAt
+  portfolioUrl    String?
+  portfolioStatus String?
+  deployedAt      DateTime?
 }

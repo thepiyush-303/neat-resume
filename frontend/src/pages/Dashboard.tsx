@@ -14,6 +14,8 @@ import {
   Trash2,
   ChevronRight,
   Sparkles,
+  CheckCircle2,
+  Globe,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,6 +38,7 @@ interface Resume {
   templateId: string;
   atsScore: number | null;
   updatedAt: string;
+  portfolioUrl?: string | null;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -206,9 +209,22 @@ function ResumeCard({
             <BarChart3 className="h-3 w-3" />
             {resume.atsScore !== null ? `${resume.atsScore}% ATS` : 'Scoring...'}
           </div>
-          <div className="flex items-center gap-1 text-xs text-zinc-600">
-            <Clock className="h-3 w-3" />
-            {relativeTime(resume.updatedAt)}
+          <div className="flex items-center gap-2">
+            {resume.portfolioUrl && (
+              <a 
+                href={resume.portfolioUrl} 
+                target="_blank" 
+                rel="noreferrer" 
+                className="flex flex-row gap-1 items-center justify-center text-xs text-sky-400 hover:text-sky-300 transition-colors"
+                onClick={e => e.stopPropagation()}
+              >
+                <Globe className="h-3 w-3" /> Live
+              </a>
+            )}
+            <div className="flex items-center gap-1 text-xs text-zinc-600">
+              <Clock className="h-3 w-3" />
+              {relativeTime(resume.updatedAt)}
+            </div>
           </div>
         </div>
       </div>
@@ -245,12 +261,27 @@ export default function Dashboard() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [githubStatus, setGithubStatus] = useState<{ connected: boolean; username: string | null } | null>(null);
 
   useEffect(() => {
     api.get('/api/resumes')
       .then(({ data }) => setResumes(data.resumes))
       .catch(() => {})
       .finally(() => setLoading(false));
+
+    api.get('/api/github/status')
+      .then(({ data }) => setGithubStatus(data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('github') === 'success') {
+      // Re-fetch status
+      api.get('/api/github/status').then(({ data }) => setGithubStatus(data));
+      // Remove query param
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
   }, []);
 
   const displayName = user?.name?.split(' ')[0] || 'there';
@@ -300,6 +331,27 @@ export default function Dashboard() {
           </div>
 
           <div className="flex items-center gap-3">
+            {!githubStatus?.connected ? (
+              <Button
+                variant="outline"
+                className="gap-2 rounded-xl border-zinc-700 bg-zinc-900/50 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800"
+                onClick={async () => {
+                  try {
+                    const { data } = await api.get('/api/github/auth');
+                    window.location.href = data.url;
+                  } catch (e) {
+                    alert("Failed to initiate GitHub connect");
+                  }
+                }}
+              >
+                <Globe className="h-4 w-4" /> Connect GitHub
+              </Button>
+            ) : (
+              <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-400">
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                GitHub Connected
+              </div>
+            )}
             <Button
               variant="outline"
               className="gap-2 rounded-xl border-zinc-700 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800"

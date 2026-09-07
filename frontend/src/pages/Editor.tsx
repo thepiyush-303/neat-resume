@@ -2,9 +2,10 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import {
   ChevronDown, ChevronRight, Save, Download, ArrowLeft,
-  Plus, Trash2, Loader2, CheckCircle2, Layout,
+  Plus, Trash2, Loader2, CheckCircle2, Layout, Globe,
 } from 'lucide-react';
 import { api } from '../context/AuthContext';
+import { DeployModal } from '../components/DeployModal';
 import type { ResumeData, TemplateId, WorkExperience, Education, Project, SkillGroup } from '../types/resume';
 import { TEMPLATE_IDS } from '../types/resume';
 
@@ -175,6 +176,9 @@ export default function Editor() {
   const [title, setTitle] = useState('');
   const [atsScore, setAtsScore] = useState<number | null>(null);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
+  const [deployModalOpen, setDeployModalOpen] = useState(false);
+  const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
+  
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lastSavedRef = useRef<string>('');
 
@@ -187,6 +191,7 @@ export default function Editor() {
         setTemplateId(res.resume.templateId as TemplateId);
         setTitle(res.resume.title);
         setAtsScore(res.resume.atsScore);
+        setPortfolioUrl(res.resume.portfolioUrl || null);
         lastSavedRef.current = JSON.stringify({
           data: res.resume.parsedData,
           templateId: res.resume.templateId,
@@ -321,6 +326,13 @@ export default function Editor() {
               Save
             </button>
             <button
+              onClick={() => setDeployModalOpen(true)}
+              className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+            >
+              <Globe className="h-3 w-3" />
+              Publish
+            </button>
+            <button
               onClick={() => window.print()}
               className="flex items-center gap-1 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 transition-colors"
             >
@@ -341,6 +353,13 @@ export default function Editor() {
           {atsScore !== null && (
             <div className={`mt-1 text-xs font-medium flex items-center gap-1 ${atsScore >= 80 ? 'text-emerald-400' : atsScore >= 60 ? 'text-amber-400' : 'text-red-400'}`}>
               ATS Score: {atsScore}/100
+            </div>
+          )}
+          {portfolioUrl && (
+            <div className="mt-1 text-xs font-medium flex items-center gap-1 text-sky-400">
+              <a href={portfolioUrl} target="_blank" rel="noreferrer" className="hover:underline flex items-center gap-1">
+                <Globe className="h-3 w-3" /> Live: {portfolioUrl.replace('https://', '')}
+              </a>
             </div>
           )}
         </div>
@@ -516,6 +535,13 @@ export default function Editor() {
           .flex.h-screen > div:first-child { display: none !important; }
         }
       `}</style>
+      
+      <DeployModal 
+        isOpen={deployModalOpen} 
+        onClose={() => setDeployModalOpen(false)} 
+        resumeId={id as string} 
+        onDeployed={(url) => setPortfolioUrl(url)} 
+      />
     </div>
   );
 }

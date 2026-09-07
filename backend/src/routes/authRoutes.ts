@@ -62,7 +62,7 @@ router.post('/signup', authLimiter, async (req, res) => {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -107,7 +107,7 @@ router.post('/login', authLimiter, async (req, res) => {
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -141,27 +141,9 @@ router.post('/refresh', async (req, res) => {
       return;
     }
 
-    const { accessToken, refreshToken } = generateTokens(decoded.userId);
-    
-    await prisma.refreshToken.update({
-      where: { id: savedToken.id },
-      data: { revoked: true }
-    });
-
-    await prisma.refreshToken.create({
-      data: {
-        token: refreshToken,
-        userId: decoded.userId,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      }
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    // Rather than strict rotation, we issue a new access token and reuse the refresh token.
+    // This avoids race conditions in React 18 Strict Mode and concurrent requests.
+    const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET || 'supersecret_fallback_key', { expiresIn: '1d' });
 
     res.status(200).json({ accessToken });
   } catch (error) {
