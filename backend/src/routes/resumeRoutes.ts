@@ -22,7 +22,7 @@ const upload = multer({
   },
 });
 
-const PARSER_URL = process.env.PARSER_SERVICE_URL || "http://localhost:8000";
+const PARSER_URL = (process.env.PARSER_SERVICE_URL || "http://localhost:8000").replace(/\/$/, '');
 
 // ── POST /api/resumes/upload ─────────────────────────────────────────────────
 router.post("/upload", authenticate, upload.single("file"), async (req: AuthRequest, res: Response) => {

@@ -26,7 +26,7 @@ export class GitHubDeployer {
     if (!user || !user.githubUsername) throw new Error("GitHub not connected");
 
     // 2. Generate Portfolio via Python Service
-    const PARSER_SERVICE_URL = process.env.PARSER_SERVICE_URL || 'http://127.0.0.1:8000';
+    const PARSER_SERVICE_URL = (process.env.PARSER_SERVICE_URL || 'http://127.0.0.1:8000').replace(/\/$/, '');
     let generationResult;
     try {
       const response = await axios.post(`${PARSER_SERVICE_URL}/generate-portfolio`, resume.parsedData);
