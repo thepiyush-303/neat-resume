@@ -133,19 +133,35 @@ function ResumeCard({
   const color = templateColors[resume.templateId] || 'from-zinc-600 to-zinc-800';
 
   return (
-    <div className="group relative flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-200 hover:-translate-y-1 hover:border-zinc-700 hover:shadow-xl hover:shadow-black/40">
+    <div 
+      className="group relative flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-200 hover:-translate-y-1 hover:border-zinc-700 hover:shadow-xl hover:shadow-black/40 cursor-pointer overflow-hidden"
+      onClick={() => onEdit(resume.id)}
+    >
       {/* Thumbnail */}
-      <div className={`relative flex h-36 items-center justify-center overflow-hidden rounded-t-2xl bg-gradient-to-br ${color}`}>
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative flex flex-col items-center gap-1">
+      <div className={`relative flex h-36 items-center justify-center bg-gradient-to-br ${color}`}>
+        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/60 transition-colors duration-300" />
+        
+        {/* Hover action overlay */}
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 scale-95 group-hover:scale-100">
+          <Button 
+            variant="secondary" 
+            className="gap-2 shadow-lg hover:scale-105 pointer-events-auto transition-transform"
+            onClick={(e) => { e.stopPropagation(); onEdit(resume.id); }}
+          >
+            <Pencil className="h-4 w-4" /> Open Editor
+          </Button>
+        </div>
+
+        <div className="relative flex flex-col items-center gap-1 group-hover:opacity-0 transition-opacity duration-300">
           <FileText className="h-10 w-10 text-white/80" strokeWidth={1.5} />
           <span className="text-xs font-medium text-white/70">{resume.templateId}</span>
         </div>
+        
         {/* ATS ring */}
-        <div className="absolute right-3 top-3 flex flex-col items-center">
+        <div className="absolute right-3 top-3 flex flex-col items-center group-hover:opacity-0 transition-opacity duration-300">
           <div className="relative">
             <AtsRing score={resume.atsScore} />
-            <span className="absolute inset-0 flex items-center justify-center rotate-90 text-xs font-bold text-white">
+            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
               {resume.atsScore ?? '—'}
             </span>
           </div>
@@ -160,26 +176,28 @@ function ResumeCard({
               {resume.title}
             </h3>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex-shrink-0 rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-100">
-              <MoreVertical className="h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-44 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-100">
-              <DropdownMenuItem className="cursor-pointer gap-2 text-sm hover:bg-zinc-800" onClick={() => onEdit(resume.id)}>
-                <Pencil className="h-3.5 w-3.5 text-zinc-400" /> Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer gap-2 text-sm hover:bg-zinc-800" onClick={() => onDuplicate(resume.id)}>
-                <Copy className="h-3.5 w-3.5 text-zinc-400" /> Duplicate
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-zinc-800" />
-              <DropdownMenuItem
-                className="cursor-pointer gap-2 text-sm text-red-400 hover:bg-zinc-800 hover:text-red-400"
-                onClick={() => onDelete(resume.id)}
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <div onClick={(e) => e.stopPropagation()}>
+            <DropdownMenu>
+              <DropdownMenuTrigger className="flex-shrink-0 rounded-lg p-1.5 text-zinc-500 transition-colors hover:bg-zinc-800 hover:text-zinc-100 focus-visible:outline-none">
+                <MoreVertical className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-100">
+                <DropdownMenuItem className="cursor-pointer gap-2 text-sm hover:bg-zinc-800" onClick={(e) => { e.stopPropagation(); onEdit(resume.id); }}>
+                  <Pencil className="h-3.5 w-3.5 text-zinc-400" /> Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem className="cursor-pointer gap-2 text-sm hover:bg-zinc-800" onClick={(e) => { e.stopPropagation(); onDuplicate(resume.id); }}>
+                  <Copy className="h-3.5 w-3.5 text-zinc-400" /> Duplicate
+                </DropdownMenuItem>
+                <DropdownMenuSeparator className="bg-zinc-800" />
+                <DropdownMenuItem
+                  className="cursor-pointer gap-2 text-sm text-red-400 hover:bg-zinc-800 hover:text-red-400"
+                  onClick={(e) => { e.stopPropagation(); onDelete(resume.id); }}
+                >
+                  <Trash2 className="h-3.5 w-3.5" /> Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
 
         {/* Footer */}
