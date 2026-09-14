@@ -16,6 +16,7 @@ import {
   Sparkles,
   CheckCircle2,
   Globe,
+  AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,8 +28,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { api, useAuth } from '../context/AuthContext';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -274,25 +277,28 @@ export default function Dashboard() {
   const [resumes, setResumes] = useState<Resume[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [githubStatus, setGithubStatus] = useState<{ connected: boolean; username: string | null } | null>(null);
 
   useEffect(() => {
     api.get('/api/resumes')
       .then(({ data }) => setResumes(data.resumes))
-      .catch(() => {})
+      .catch(() => setError('Failed to load resumes. Please refresh.'))
       .finally(() => setLoading(false));
 
     api.get('/api/github/status')
       .then(({ data }) => setGithubStatus(data))
-      .catch(() => {});
+      .catch(() => {}); // non-critical feature
   }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     if (params.get('github') === 'success') {
-      // Re-fetch status
       api.get('/api/github/status').then(({ data }) => setGithubStatus(data));
-      // Remove query param
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (params.get('github') === 'error') {
+      setError('GitHub connection failed. Please try again.');
       window.history.replaceState({}, document.title, window.location.pathname);
     }
   }, []);
@@ -307,25 +313,53 @@ export default function Dashboard() {
     r.title.toLowerCase().includes(search.toLowerCase())
   );
 
-  const handleDelete = async (id: string) => {
+  // Show confirmation first; actual deletion happens in confirmDelete
+  const handleDelete = (id: string) => setDeleteTarget(id);
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await api.delete(`/api/resumes/${id}`);
-      setResumes(prev => prev.filter(r => r.id !== id));
-    } catch {}
+      await api.delete(`/api/resumes/${deleteTarget}`);
+      setResumes(prev => prev.filter(r => r.id !== deleteTarget));
+    } catch {
+      setError('Failed to delete resume. Please try again.');
+    } finally {
+      setDeleteTarget(null);
+    }
   };
 
   const handleDuplicate = async (id: string) => {
     try {
       const { data } = await api.post(`/api/resumes/${id}/duplicate`);
       setResumes(prev => [...prev, data.resume]);
-    } catch {}
+    } catch {
+      setError('Failed to duplicate resume. Please try again.');
+    }
   };
 
   const handleEdit = (id: string) => navigate(`/resumes/${id}/edit`);
 
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100">
+      {/* Confirm delete dialog */}
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Delete resume?"
+        description="This will permanently delete the resume. This action cannot be undone."
+        confirmLabel="Delete"
+        variant="destructive"
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        {/* Error banner */}
+        {error && (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            <span className="flex-1">{error}</span>
+            <button onClick={() => setError(null)} className="text-red-400 hover:text-red-300 font-bold">✕</button>
+          </div>
+        )}
 
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
@@ -368,6 +402,7 @@ export default function Dashboard() {
             <Button
               variant="outline"
               className="gap-2 rounded-xl border-zinc-700 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800"
+              onClick={() => navigate('/templates')}
             >
               <Plus className="h-4 w-4" /> Create from Blank
             </Button>

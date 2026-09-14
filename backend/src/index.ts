@@ -1,40 +1,46 @@
-import express from "express"
-import cors from "cors"
-import cookieParser from "cookie-parser"
-import resumeRouter from "./routes/resumeRoutes"
-import formattingRouter from "./routes/formattingRoutes"
-import authRoutes from "./routes/authRoutes"
-import githubRoutes from "./routes/githubRoutes"
-import portfolioRoutes from "./routes/portfolioRoutes"
+import 'dotenv/config';
+import express from 'express';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import { config } from './utils/env';
+import authRoutes from './routes/authRoutes';
+import resumeRouter from './routes/resumeRoutes';
+import githubRoutes from './routes/githubRoutes';
+import portfolioRoutes from './routes/portfolioRoutes';
+import { errorHandler } from './middleware/error.middleware';
 
-const app = express()
+const app = express();
 
+// Security headers
+app.use(helmet());
+
+// CORS
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGINS 
-    ? process.env.ALLOWED_ORIGINS.split(',') 
-    : [
-        'http://localhost:5173',
-        'http://localhost:3000',
-        'http://127.0.0.1:5173',
-        'http://127.0.0.1:3000',
-      ],
+  origin: config.allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  credentials: true
-}))
-app.use(express.json())
-app.use(cookieParser())
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+}));
 
-app.use('/api/auth', authRoutes)
-app.use('/api/resumes', resumeRouter)
-app.use('/api/format', formattingRouter)
-app.use('/api/github', githubRoutes)
-app.use('/api/portfolio', portfolioRoutes)
-app.get('/', (req, res) =>{
-    res.send("Hey, I am working")
-})
+// Body parsing with size limits
+app.use(express.json({ limit: '1mb' }));
+app.use(cookieParser());
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`server is up on port ${PORT}`)
-})
+// Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/resumes', resumeRouter);
+app.use('/api/github', githubRoutes);
+app.use('/api/portfolio', portfolioRoutes);
+
+// Health check
+app.get('/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Global error handler (must be registered last)
+app.use(errorHandler);
+
+app.listen(config.port, () => {
+  console.log(`✅ Server running on port ${config.port} (${config.nodeEnv})`);
+});

@@ -1,131 +1,133 @@
 import express from 'express';
 import argon2 from 'argon2';
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
+import crypto from 'crypto';
 import { z } from 'zod';
 import rateLimit from 'express-rate-limit';
+import prisma from '../lib/prisma';
+import { config } from '../utils/env';
 import { authenticate, AuthRequest } from '../middlewares/authMiddleware';
+import { validate } from '../middleware/validate.middleware';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
+// Rate limiting for auth endpoints
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 15 * 60 * 1000, // 15 minutes
   max: 10,
-  message: 'Too many requests from this IP, please try again after 15 minutes'
+  message: { error: 'Too many requests from this IP, please try again after 15 minutes' },
 });
 
+// Validation schemas
 const SignupSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  password: z.string().min(6),
+  name: z.string().min(2, 'Name must be at least 2 characters').max(100),
+  email: z.string().email('Enter a valid email address').max(255),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(128),
 });
 
 const LoginSchema = z.object({
-  email: z.string().email(),
-  password: z.string(),
+  email: z.string().email('Enter a valid email address'),
+  password: z.string().min(1, 'Password is required'),
 });
 
-const generateTokens = (userId: string) => {
-  const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET || 'supersecret_fallback_key', { expiresIn: '1d' });
-  const refreshToken = jwt.sign({ userId }, process.env.JWT_REFRESH_SECRET || 'supersecret_fallback_key', { expiresIn: '7d' });
-  return { accessToken, refreshToken };
-};
+// Token generation
+function generateAccessToken(userId: string): string {
+  return jwt.sign({ userId }, config.jwtSecret, { expiresIn: '15m' });
+}
 
-router.post('/signup', authLimiter, async (req, res) => {
+function generateRefreshToken(userId: string): string {
+  return jwt.sign({ userId }, config.jwtRefreshSecret, { expiresIn: '7d' });
+}
+
+// ── POST /api/auth/signup ────────────────────────────────────────────────────
+router.post('/signup', authLimiter, validate(SignupSchema), async (req, res, next) => {
   try {
-    const parsed = SignupSchema.parse(req.body);
-    const existingUser = await prisma.user.findUnique({ where: { email: parsed.email } });
+    const { name, email, password } = req.body;
+
+    const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-      res.status(400).json({ error: 'User already exists' });
+      res.status(409).json({ error: 'An account with this email already exists' });
       return;
     }
 
-    const passwordHash = await argon2.hash(parsed.password);
+    const passwordHash = await argon2.hash(password);
     const user = await prisma.user.create({
-      data: {
-        name: parsed.name,
-        email: parsed.email,
-        passwordHash,
-      },
+      data: { name, email, passwordHash },
     });
 
-    const { accessToken, refreshToken } = generateTokens(user.id);
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
     await prisma.refreshToken.create({
       data: {
         token: refreshToken,
         userId: user.id,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      }
+      },
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: config.isProduction,
+      sameSite: config.isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(201).json({ 
-      accessToken, 
-      user: { id: user.id, name: user.name, email: user.email } 
+    res.status(201).json({
+      accessToken,
+      user: { id: user.id, name: user.name, email: user.email },
     });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ error: error.issues });
-    } else {
-      console.error('[signup error]', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
+  } catch (err) {
+    next(err);
   }
 });
 
-router.post('/login', authLimiter, async (req, res) => {
+// ── POST /api/auth/login ─────────────────────────────────────────────────────
+router.post('/login', authLimiter, validate(LoginSchema), async (req, res, next) => {
   try {
-    const parsed = LoginSchema.parse(req.body);
-    const user = await prisma.user.findUnique({ where: { email: parsed.email } });
+    const { email, password } = req.body;
+
+    const user = await prisma.user.findUnique({ where: { email } });
     if (!user) {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
 
-    const valid = await argon2.verify(user.passwordHash, parsed.password);
+    const valid = await argon2.verify(user.passwordHash, password);
     if (!valid) {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
     }
 
-    const { accessToken, refreshToken } = generateTokens(user.id);
+    const accessToken = generateAccessToken(user.id);
+    const refreshToken = generateRefreshToken(user.id);
+
     await prisma.refreshToken.create({
       data: {
         token: refreshToken,
         userId: user.id,
         expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      }
+      },
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: config.isProduction,
+      sameSite: config.isProduction ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.status(200).json({ 
-      accessToken, 
-      user: { id: user.id, name: user.name, email: user.email } 
+    res.status(200).json({
+      accessToken,
+      user: { id: user.id, name: user.name, email: user.email },
     });
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      res.status(400).json({ error: error.issues });
-    } else {
-      console.error('[login error]', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
+  } catch (err) {
+    next(err);
   }
 });
 
-router.post('/refresh', async (req, res) => {
+// ── POST /api/auth/refresh ───────────────────────────────────────────────────
+router.post('/refresh', async (req, res, next) => {
   const token = req.cookies.refreshToken;
   if (!token) {
     res.status(401).json({ error: 'No refresh token' });
@@ -133,46 +135,76 @@ router.post('/refresh', async (req, res) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET || 'supersecret_fallback_key') as { userId: string };
+    const decoded = jwt.verify(token, config.jwtRefreshSecret) as { userId: string };
     const savedToken = await prisma.refreshToken.findUnique({ where: { token } });
-    
+
     if (!savedToken || savedToken.revoked || savedToken.expiresAt < new Date()) {
       res.status(401).json({ error: 'Invalid refresh token' });
       return;
     }
 
-    // Rather than strict rotation, we issue a new access token and reuse the refresh token.
-    // This avoids race conditions in React 18 Strict Mode and concurrent requests.
-    const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET || 'supersecret_fallback_key', { expiresIn: '1d' });
+    // Rotate: revoke old refresh token, issue new pair
+    await prisma.refreshToken.update({
+      where: { id: savedToken.id },
+      data: { revoked: true },
+    });
 
-    res.status(200).json({ accessToken });
-  } catch (error) {
+    const newAccessToken = generateAccessToken(decoded.userId);
+    const newRefreshToken = generateRefreshToken(decoded.userId);
+
+    await prisma.refreshToken.create({
+      data: {
+        token: newRefreshToken,
+        userId: decoded.userId,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
+
+    res.cookie('refreshToken', newRefreshToken, {
+      httpOnly: true,
+      secure: config.isProduction,
+      sameSite: config.isProduction ? 'none' : 'lax',
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(200).json({ accessToken: newAccessToken });
+  } catch {
     res.status(401).json({ error: 'Invalid refresh token' });
   }
 });
 
+// ── POST /api/auth/logout ────────────────────────────────────────────────────
 router.post('/logout', async (req, res) => {
   const token = req.cookies.refreshToken;
   if (token) {
     await prisma.refreshToken.updateMany({
       where: { token },
-      data: { revoked: true }
+      data: { revoked: true },
     });
   }
   res.clearCookie('refreshToken');
   res.status(200).json({ message: 'Logged out' });
 });
 
-router.get('/me', authenticate, async (req: AuthRequest, res) => {
-  if (!req.user) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
+// ── GET /api/auth/me ─────────────────────────────────────────────────────────
+router.get('/me', authenticate, async (req: AuthRequest, res, next) => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const user = await prisma.user.findUnique({
+      where: { id: req.user.id },
+      select: { id: true, name: true, email: true, createdAt: true },
+    });
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    next(err);
   }
-  const user = await prisma.user.findUnique({
-    where: { id: req.user.id },
-    select: { id: true, name: true, email: true, createdAt: true }
-  });
-  res.status(200).json(user);
 });
 
 export default router;

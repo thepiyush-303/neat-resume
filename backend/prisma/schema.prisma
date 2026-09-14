@@ -16,18 +16,20 @@ model User {
   updatedAt     DateTime       @updatedAt
   sessions      Session[]
   refreshTokens RefreshToken[]
-  resumes             Resume[]
+  resumes       Resume[]
   githubAccessToken   String?
   githubUsername      String?
   githubConnectedAt   DateTime?
 }
 
 model Session {
-  id        String   @id @default(cuid())
+  id        String   @id
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   expiresAt DateTime
+
+  @@index([userId])
 }
 
 model RefreshToken {
@@ -38,6 +40,9 @@ model RefreshToken {
   createdAt DateTime @default(now())
   expiresAt DateTime
   revoked   Boolean  @default(false)
+
+  @@index([userId])
+  @@index([token])
 }
 
 model Resume {
@@ -51,8 +56,11 @@ model Resume {
   atsScore      Int?
   isDeleted     Boolean  @default(false)
   createdAt     DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  updatedAt     DateTime @updatedAt
   portfolioUrl    String?
   portfolioStatus String?
   deployedAt      DateTime?
+
+  @@index([userId])
+  @@index([isDeleted])
 }

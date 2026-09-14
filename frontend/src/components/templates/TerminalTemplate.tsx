@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePortfolio } from '../../context/PortfolioContext';
+import { mockPortfolioData } from '../../lib/mockData';
 
 const Line: React.FC<{ prompt?: string; children: React.ReactNode; dim?: boolean }> = ({ prompt = '$', children, dim }) => (
   <div style={{ display: 'flex', gap: 12, opacity: dim ? 0.5 : 1 }}>
@@ -17,7 +17,7 @@ const Cmd: React.FC<{ text: string }> = ({ text }) => (
 );
 
 export const TerminalTemplate: React.FC = () => {
-  const { portfolioData: d } = usePortfolio();
+  const d = mockPortfolioData;
   if (!d || !d.personalInfo) return null;
   const p = d.personalInfo;
   const experience = (d.experience ?? []).filter(Boolean);

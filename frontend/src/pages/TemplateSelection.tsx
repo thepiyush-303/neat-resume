@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePortfolio } from '../context/PortfolioContext';
+import { mockPortfolioData } from '../lib/mockData';
 import { ArrowLeft } from 'lucide-react';
 
 // Import actual template components
@@ -21,11 +21,7 @@ const LAYOUTS: { id: TemplateId; name: string; tag: string }[] = [
 
 /* ── Inline Standard Template ─────────────────────────────────────────── */
 const StandardTemplate: React.FC = () => {
-  const { portfolioData: rawData } = usePortfolio();
-  const d = rawData || {
-    personalInfo: { name: 'Your Name', role: 'Your Role', bio: '', email: '', phone: '', location: '', linkedin: '', github: '' },
-    education: [], experience: [], projects: [], skills: [], achievements: [],
-  };
+  const d = mockPortfolioData as any;
   const p = d.personalInfo;
   const education = (d.education ?? []).filter(Boolean);
   const experience = (d.experience ?? []).filter(Boolean);

@@ -1,10 +1,10 @@
 import React from 'react';
-import { usePortfolio } from '../../context/PortfolioContext';
+import { mockPortfolioData } from '../../lib/mockData';
 
 const ACCENT = '#f97316';
 
 export const CreativeTemplate: React.FC = () => {
-  const { portfolioData: d } = usePortfolio();
+  const d = mockPortfolioData;
   if (!d || !d.personalInfo) return null;
   const p = d.personalInfo;
   const experience = (d.experience ?? []).filter(Boolean);

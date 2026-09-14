@@ -12,7 +12,7 @@ import { TEMPLATE_IDS } from '../types/resume';
 // ─── Inline Template Preview ─────────────────────────────────────────────────
 // A lightweight, self-contained HTML resume renderer that accepts ResumeData props.
 
-function ResumePreview({ data, templateId }: { data: ResumeData; templateId: TemplateId }) {
+const ResumePreview = React.memo(function ResumePreview({ data, templateId }: { data: ResumeData; templateId: TemplateId }) {
   const p = data.personalInfo;
   const styles: Record<TemplateId, React.CSSProperties> = {
     'minimal-clean': { fontFamily: 'Georgia, serif', background: '#fff', color: '#111' },
@@ -123,7 +123,7 @@ function ResumePreview({ data, templateId }: { data: ResumeData; templateId: Tem
       )}
     </div>
   );
-}
+});
 
 // ─── Form Helpers ─────────────────────────────────────────────────────────────
 

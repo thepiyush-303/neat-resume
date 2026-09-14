@@ -1,8 +1,0 @@
-fastapi
-uvicorn
-pdfplumber
-python-docx
-google-genai
-python-dotenv
-pydantic
-python-multipart

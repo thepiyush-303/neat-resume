@@ -1,73 +1,77 @@
-import { Router, Request, Response } from "express";
-import axios from "axios";
-import FormData from "form-data";
-import multer from "multer";
-import { PrismaClient } from "@prisma/client";
-import { authenticate, AuthRequest } from "../middlewares/authMiddleware";
-import { ResumeDataSchema } from "../types/ResumeSchema";
-import { computeAtsScore } from "../utils/atsScore";
+import { Router, Response } from 'express';
+import multer from 'multer';
+import prisma from '../lib/prisma';
+import { authenticate, AuthRequest } from '../middlewares/authMiddleware';
+import { ResumeDataSchema } from '../types/ResumeSchema';
+import { computeAtsScore } from '../utils/atsScore';
+import { extractText, structureResume } from '../services/parser.service';
+import { z } from 'zod';
 
 const router = Router();
-const prisma = new PrismaClient();
+
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
-    const allowed = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
-    if (allowed.includes(file.mimetype) || file.originalname.endsWith(".pdf") || file.originalname.endsWith(".docx")) {
+    const allowed = [
+      'application/pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
+    if (
+      allowed.includes(file.mimetype) ||
+      file.originalname.endsWith('.pdf') ||
+      file.originalname.endsWith('.docx')
+    ) {
       cb(null, true);
     } else {
-      cb(new Error("Only PDF and DOCX files are accepted."));
+      cb(new Error('Only PDF and DOCX files are accepted.'));
     }
   },
 });
 
-const PARSER_URL = (process.env.PARSER_SERVICE_URL || "http://localhost:8000").replace(/\/$/, '');
+// Validation schema for PATCH updates
+const UpdateResumeSchema = z.object({
+  parsedData: ResumeDataSchema.optional(),
+  templateId: z.string().min(1).max(50).optional(),
+  title: z.string().min(1).max(200).optional(),
+}).refine(data => data.parsedData || data.templateId || data.title, {
+  message: 'At least one field must be provided',
+});
 
 // ── POST /api/resumes/upload ─────────────────────────────────────────────────
-router.post("/upload", authenticate, upload.single("file"), async (req: AuthRequest, res: Response) => {
-  if (!req.file) {
-    res.status(400).json({ error: "No file uploaded." });
-    return;
-  }
-
+router.post('/upload', authenticate, upload.single('file'), async (req: AuthRequest, res: Response, next) => {
   try {
-    // 1. Forward file to the Python parser service
-    const form = new FormData();
-    form.append("file", req.file.buffer, {
-      filename: req.file.originalname,
-      contentType: req.file.mimetype,
-    });
-
-    const parserRes = await axios.post(`${PARSER_URL}/parse`, form, {
-      headers: form.getHeaders(),
-      timeout: 120_000,
-    });
-
-    if (!parserRes.data.success) {
-      res.status(422).json({ error: "Parser service failed.", details: parserRes.data });
+    if (!req.file) {
+      res.status(400).json({ error: 'No file uploaded.' });
       return;
     }
 
-    // 2. Validate against our canonical schema
-    const parsed = ResumeDataSchema.parse(parserRes.data.data);
+    // 1. Extract text
+    const rawText = await extractText(req.file.buffer, req.file.mimetype);
+    if (!rawText || !rawText.trim()) {
+      res.status(422).json({ error: 'No text could be extracted from the document.' });
+      return;
+    }
+
+    // 2. Structure via AI
+    const parsed = await structureResume(rawText);
 
     // 3. Compute ATS score
     const atsScore = computeAtsScore(parsed);
 
-    // 4. Derive a title from the resume
+    // 4. Derive a title
     const title = parsed.personalInfo.fullName
       ? `${parsed.personalInfo.fullName}'s Resume`
-      : req.file.originalname.replace(/\.(pdf|docx)$/i, "");
+      : req.file.originalname.replace(/\.(pdf|docx)$/i, '');
 
     // 5. Save to DB
     const resume = await prisma.resume.create({
       data: {
         userId: req.user!.id,
         title,
-        templateId: "minimal-clean",
+        templateId: 'minimal-clean',
         parsedData: parsed as object,
-        schemaVersion: "1.0.0",
+        schemaVersion: '1.0.0',
         atsScore,
         isDeleted: false,
       },
@@ -75,17 +79,17 @@ router.post("/upload", authenticate, upload.single("file"), async (req: AuthRequ
 
     res.status(201).json({ success: true, resume });
   } catch (err: any) {
-    console.error("[upload error]", err?.message || err);
-    if (err.response) {
-      res.status(422).json({ error: "Parser failed.", details: err.response.data });
-    } else {
-      res.status(500).json({ error: "Internal server error." });
+    // If it's a parsing error, return 422
+    if (err.message?.includes('parsing failed')) {
+      res.status(422).json({ error: 'Resume parsing failed', details: err.message });
+      return;
     }
+    next(err);
   }
 });
 
 // ── GET /api/resumes ─────────────────────────────────────────────────────────
-router.get("/", authenticate, async (req: AuthRequest, res: Response) => {
+router.get('/', authenticate, async (req: AuthRequest, res: Response, next) => {
   try {
     const resumes = await prisma.resume.findMany({
       where: { userId: req.user!.id, isDeleted: false },
@@ -97,107 +101,96 @@ router.get("/", authenticate, async (req: AuthRequest, res: Response) => {
         atsScore: true,
         createdAt: true,
         updatedAt: true,
+        portfolioUrl: true,
       },
-      orderBy: { updatedAt: "desc" },
+      orderBy: { updatedAt: 'desc' },
     });
     res.json({ resumes });
   } catch (err) {
-    console.error("[list resumes error]", err);
-    res.status(500).json({ error: "Internal server error." });
+    next(err);
   }
 });
 
 // ── GET /api/resumes/:id ─────────────────────────────────────────────────────
-router.get("/:id", authenticate, async (req: AuthRequest, res: Response) => {
-  const id = req.params.id as string;
+router.get('/:id', authenticate, async (req: AuthRequest, res: Response, next) => {
   try {
     const resume = await prisma.resume.findFirst({
-      where: { id, userId: req.user!.id, isDeleted: false },
+      where: { id: String(req.params.id), userId: req.user!.id, isDeleted: false },
     });
     if (!resume) {
-      res.status(404).json({ error: "Resume not found." });
+      res.status(404).json({ error: 'Resume not found.' });
       return;
     }
     res.json({ resume });
   } catch (err) {
-    console.error("[get resume error]", err);
-    res.status(500).json({ error: "Internal server error." });
+    next(err);
   }
 });
 
 // ── PATCH /api/resumes/:id ───────────────────────────────────────────────────
-router.patch("/:id", authenticate, async (req: AuthRequest, res: Response) => {
-  const id = req.params.id as string;
+router.patch('/:id', authenticate, async (req: AuthRequest, res: Response, next) => {
   try {
     const existing = await prisma.resume.findFirst({
-      where: { id, userId: req.user!.id, isDeleted: false },
+      where: { id: String(req.params.id), userId: req.user!.id, isDeleted: false },
     });
     if (!existing) {
-      res.status(404).json({ error: "Resume not found." });
+      res.status(404).json({ error: 'Resume not found.' });
       return;
     }
 
-    const { parsedData, templateId, title } = req.body;
+    // Validate the update payload
+    const { parsedData, templateId, title } = UpdateResumeSchema.parse(req.body);
 
     let parsedJson: object | undefined;
     let atsScore: number | undefined;
     if (parsedData) {
-      const validated = ResumeDataSchema.parse(parsedData);
-      parsedJson = validated as object;
-      atsScore = computeAtsScore(validated);
+      parsedJson = parsedData as object;
+      atsScore = computeAtsScore(parsedData);
     }
 
     const updated = await prisma.resume.update({
-      where: { id },
+      where: { id: String(req.params.id) },
       data: {
-        ...(title ? { title: title as string } : {}),
-        ...(templateId ? { templateId: templateId as string } : {}),
+        ...(title ? { title } : {}),
+        ...(templateId ? { templateId } : {}),
         ...(parsedJson !== undefined ? { parsedData: parsedJson, atsScore } : {}),
       },
     });
 
     res.json({ success: true, resume: updated });
-  } catch (err: any) {
-    console.error("[update resume error]", err);
-    if (err.name === "ZodError") {
-      res.status(400).json({ error: "Invalid resume data.", details: err.errors });
-    } else {
-      res.status(500).json({ error: "Internal server error." });
-    }
+  } catch (err) {
+    next(err);
   }
 });
 
 // ── DELETE /api/resumes/:id ──────────────────────────────────────────────────
-router.delete("/:id", authenticate, async (req: AuthRequest, res: Response) => {
-  const id = req.params.id as string;
+router.delete('/:id', authenticate, async (req: AuthRequest, res: Response, next) => {
   try {
     const existing = await prisma.resume.findFirst({
-      where: { id, userId: req.user!.id, isDeleted: false },
+      where: { id: String(req.params.id), userId: req.user!.id, isDeleted: false },
     });
     if (!existing) {
-      res.status(404).json({ error: "Resume not found." });
+      res.status(404).json({ error: 'Resume not found.' });
       return;
     }
     await prisma.resume.update({
-      where: { id },
+      where: { id: String(req.params.id) },
       data: { isDeleted: true },
     });
     res.json({ success: true });
   } catch (err) {
-    console.error("[delete resume error]", err);
-    res.status(500).json({ error: "Internal server error." });
+    next(err);
   }
 });
 
-// ── POST /api/resumes/:id/duplicate ─────────────────────────────────────────
-router.post("/:id/duplicate", authenticate, async (req: AuthRequest, res: Response) => {
-  const id = req.params.id as string;
+// ── POST /api/resumes/:id/duplicate ──────────────────────────────────────────
+router.post('/:id/duplicate', authenticate, async (req: AuthRequest, res: Response, next) => {
   try {
     const original = await prisma.resume.findFirst({
-      where: { id, userId: req.user!.id, isDeleted: false },
+      where: { id: String(req.params.id), userId: req.user!.id, isDeleted: false },
     });
     if (!original) {
-      res.status(404).json({ error: "Resume not found." });
+      res.status(404).json({ error: 'Resume not found.' });
       return;
     }
     const copy = await prisma.resume.create({
@@ -213,8 +206,7 @@ router.post("/:id/duplicate", authenticate, async (req: AuthRequest, res: Respon
     });
     res.status(201).json({ success: true, resume: copy });
   } catch (err) {
-    console.error("[duplicate resume error]", err);
-    res.status(500).json({ error: "Internal server error." });
+    next(err);
   }
 });
 
