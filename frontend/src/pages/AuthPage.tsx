@@ -53,7 +53,7 @@ const AuthPage: React.FC = () => {
   const [serverError, setServerError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, isInitialized } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,6 +69,8 @@ const AuthPage: React.FC = () => {
   const [hasAttemptedAutoLogin, setHasAttemptedAutoLogin] = useState(false);
 
   useEffect(() => {
+    if (!isInitialized) return;
+
     const autoLogin = params.get('autoLogin');
     const autoEmail = params.get('email');
     const autoPassword = params.get('password');
@@ -91,7 +93,7 @@ const AuthPage: React.FC = () => {
       };
       performAutoLogin();
     }
-  }, [params, isAuthenticated, login, navigate, hasAttemptedAutoLogin]);
+  }, [params, isAuthenticated, isInitialized, login, navigate, hasAttemptedAutoLogin]);
 
   const switchMode = (m: 'login' | 'register') => {
     navigate(`/auth?mode=${m}`, { replace: true });
