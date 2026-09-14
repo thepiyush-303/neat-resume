@@ -139,7 +139,7 @@ function ResumeCard({
 
   return (
     <div 
-      className="group relative flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-200 hover:-translate-y-1 hover:border-zinc-700 hover:shadow-xl hover:shadow-black/40 cursor-pointer overflow-hidden"
+      className="group relative flex flex-col rounded-2xl border border-zinc-800 bg-zinc-900 transition-all duration-200 cursor-pointer overflow-hidden"
       onClick={() => onEdit(resume.id)}
     >
       {/* Thumbnail */}
@@ -176,14 +176,14 @@ function ResumeCard({
         </div>
         
         {/* ATS ring */}
-        <div className="absolute right-3 top-3 flex flex-col items-center group-hover:opacity-0 transition-opacity duration-300">
+        {/* <div className="absolute right-3 top-3 flex flex-col items-center group-hover:opacity-0 transition-opacity duration-300">
           <div className="relative">
             <AtsRing score={resume.atsScore} />
             <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
               {resume.atsScore ?? '—'}
             </span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Body */}
@@ -370,7 +370,7 @@ export default function Dashboard() {
             </Avatar>
             <div>
               <h1 className="text-2xl font-bold text-zinc-100">
-                Welcome back, {displayName} 👋
+                Welcome back, {displayName}
               </h1>
               <p className="text-sm text-zinc-500 mt-0.5">Here's an overview of your resume portfolio.</p>
             </div>
@@ -421,11 +421,11 @@ export default function Dashboard() {
             value={
               <span className="flex items-center gap-2">
                 {loading ? '...' : resumes.length > 0 ? `${avgAts}%` : '—'}
-                {!loading && resumes.length > 0 && (
+                {/* {!loading && resumes.length > 0 && (
                   <Badge className="rounded-full bg-emerald-500/10 text-emerald-400 border-emerald-400/20 text-xs font-semibold">
                     {avgAts >= 80 ? '🔥 Strong' : avgAts >= 60 ? '⚡ Good' : '⚠ Needs work'}
                   </Badge>
-                )}
+                )} */}
               </span>
             }
             sub="Resume match with job descriptions"
@@ -438,22 +438,7 @@ export default function Dashboard() {
           />
         </div>
 
-        {/* ── Tip Banner ─────────────────────────────────────────────────── */}
-        {!loading && resumes.length > 0 && (
-          <div className="mb-8 flex items-center gap-3 rounded-2xl border border-indigo-700/30 bg-indigo-600/5 px-5 py-4">
-            {/* <Sparkles className="h-5 w-5 flex-shrink-0 text-indigo-400" /> */}
-            <p className="text-sm text-zinc-400">
-              <span className="font-medium text-indigo-300">Tip:</span> Click on any resume card to
-              open the live editor and update your data, switch templates, and download as PDF.
-            </p>
-            <button
-              onClick={() => resumes.length > 0 && handleEdit(resumes[0].id)}
-              className="ml-auto flex items-center gap-1 text-xs font-medium text-indigo-400 hover:text-indigo-300 flex-shrink-0"
-            >
-              Open latest <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        )}
+       
 
         {/* ── Recent Resumes Section ─────────────────────────────────────── */}
         <div>
