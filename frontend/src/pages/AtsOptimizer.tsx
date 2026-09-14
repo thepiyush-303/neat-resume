@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
-  Target, Upload, ChevronRight, Loader2, FileText,
+  Target, Loader2, FileText,
   CheckCircle2, Sparkles, BarChart3, AlertCircle,
-  Code2, Layers, Briefcase, Download, ArrowRight,
+  Code2, Briefcase, Download, ArrowRight,
 } from 'lucide-react';
 import { api } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { ResumeData, TemplateId } from '../types/resume';
+import type { ResumeData } from '../types/resume';
 
 // ─── Inline Resume Preview Component ──────────────────────────────────────────
 // Re-uses the minimal-clean styling to show the resume
@@ -91,13 +91,6 @@ const MinimalPreview = React.memo(function MinimalPreview({ data }: { data: Resu
 });
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function getAtsColor(score: number | null) {
-  if (score === null) return 'text-zinc-500';
-  if (score >= 80) return 'text-emerald-400';
-  if (score >= 60) return 'text-amber-400';
-  return 'text-red-400';
-}
 
 function Pill({ label, variant = 'default' }: { label: string; variant?: 'default' | 'required' | 'preferred' | 'keyword' }) {
   const colors = {
