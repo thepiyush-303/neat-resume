@@ -59,6 +59,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       (response) => response,
       async (error) => {
         const originalRequest = error.config;
+        
+        // If the original request was already a refresh request, don't intercept it.
+        if (originalRequest.url === '/api/auth/refresh') {
+          return Promise.reject(error);
+        }
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true;
           try {
@@ -83,8 +89,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
   }, []); // ← empty deps: register once, use ref for current token
 
+  const initAttempted = useRef(false);
+
   // Init: try silent refresh on app load
   useEffect(() => {
+    if (initAttempted.current) return;
+    initAttempted.current = true;
+
     const initializeAuth = async () => {
       try {
         const { data } = await api.post('/api/auth/refresh');
