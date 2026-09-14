@@ -66,6 +66,33 @@ const AuthPage: React.FC = () => {
     setServerError('');
   }, [params]);
 
+  const [hasAttemptedAutoLogin, setHasAttemptedAutoLogin] = useState(false);
+
+  useEffect(() => {
+    const autoLogin = params.get('autoLogin');
+    const autoEmail = params.get('email');
+    const autoPassword = params.get('password');
+
+    if (autoLogin === 'true' && autoEmail && autoPassword && !isAuthenticated && !hasAttemptedAutoLogin) {
+      setHasAttemptedAutoLogin(true);
+      const performAutoLogin = async () => {
+        setLoading(true);
+        try {
+          const { data } = await api.post('/api/auth/login', { email: autoEmail, password: autoPassword });
+          if (data.accessToken && data.user) {
+            login(data.accessToken, data.user);
+            navigate(params.get('redirect') || '/dashboard');
+          }
+        } catch (err: any) {
+          setServerError('Auto-login failed. Please sign in manually.');
+        } finally {
+          setLoading(false);
+        }
+      };
+      performAutoLogin();
+    }
+  }, [params, isAuthenticated, login, navigate, hasAttemptedAutoLogin]);
+
   const switchMode = (m: 'login' | 'register') => {
     navigate(`/auth?mode=${m}`, { replace: true });
     setName(''); setEmail(''); setPassword(''); setConfirmPassword('');
