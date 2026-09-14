@@ -441,7 +441,7 @@ export default function Dashboard() {
         {/* ── Tip Banner ─────────────────────────────────────────────────── */}
         {!loading && resumes.length > 0 && (
           <div className="mb-8 flex items-center gap-3 rounded-2xl border border-indigo-700/30 bg-indigo-600/5 px-5 py-4">
-            <Sparkles className="h-5 w-5 flex-shrink-0 text-indigo-400" />
+            {/* <Sparkles className="h-5 w-5 flex-shrink-0 text-indigo-400" /> */}
             <p className="text-sm text-zinc-400">
               <span className="font-medium text-indigo-300">Tip:</span> Click on any resume card to
               open the live editor and update your data, switch templates, and download as PDF.
