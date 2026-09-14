@@ -196,7 +196,7 @@ export default function LandingPage() {
       <Navbar onSignIn={goSignIn} onSignUp={goSignUp} />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-5">
+      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-20">
         {/* Grid background */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:48px_48px] opacity-40" />
         {/* Glow */}
