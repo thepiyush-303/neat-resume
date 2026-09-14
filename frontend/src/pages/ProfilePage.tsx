@@ -207,7 +207,7 @@ export default function ProfilePage() {
           <div className="space-y-2">
             <label className="text-xs font-medium text-zinc-400">Location</label>
             <div className="relative">
-              <MapPin className="absolute left-3 top-1.5 h-4 w-4 text-zinc-500" />
+              <MapPin className="absolute left-3 top-2 h-4 w-4 text-zinc-500" />
               <Input 
                 value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} 
                 className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-100" placeholder="e.g. San Francisco, CA"

@@ -27,6 +27,7 @@ import {
 import { api, useAuth } from '../context/AuthContext';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import TemplateThumbnail from '../components/TemplateThumbnail';
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -125,14 +126,6 @@ function ResumeCard({
   onDuplicate: (id: string) => void;
   onDelete: (id: string) => void;
 }) {
-  const templateColors: Record<string, string> = {
-    'minimal-clean': 'from-indigo-500 to-indigo-700',
-    'tech-pro': 'from-sky-500 to-sky-700',
-    'corporate': 'from-blue-600 to-blue-800',
-    'creative': 'from-pink-500 to-pink-700',
-    'terminal': 'from-emerald-500 to-emerald-700',
-  };
-  const color = templateColors[resume.templateId] || 'from-zinc-600 to-zinc-800';
 
   return (
     <div 
@@ -140,11 +133,14 @@ function ResumeCard({
       onClick={() => onEdit(resume.id)}
     >
       {/* Thumbnail */}
-      <div className={`relative flex h-36 items-center justify-center bg-gradient-to-br ${color}`}>
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/60 transition-colors duration-300" />
-        
+      <div className="relative h-36 overflow-hidden">
+        {/* Template preview — fades on hover */}
+        <div className="absolute inset-0 transition-opacity duration-300 group-hover:opacity-20">
+          <TemplateThumbnail templateId={resume.templateId} />
+        </div>
+
         {/* Hover action overlay */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 scale-95 group-hover:scale-100">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 scale-95 group-hover:scale-100 bg-zinc-950/50">
           <Button 
             variant="secondary" 
             className="gap-2 shadow-lg pointer-events-auto transition-transform"
@@ -166,21 +162,6 @@ function ResumeCard({
             </Button>
           )}
         </div>
-
-        <div className="relative flex flex-col items-center gap-1 group-hover:opacity-0 transition-opacity duration-300">
-          <FileText className="h-10 w-10 text-white/80" strokeWidth={1.5} />
-          <span className="text-xs font-medium text-white/70">{resume.templateId}</span>
-        </div>
-        
-        {/* ATS ring */}
-        {/* <div className="absolute right-3 top-3 flex flex-col items-center group-hover:opacity-0 transition-opacity duration-300">
-          <div className="relative">
-            <AtsRing score={resume.atsScore} />
-            <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white">
-              {resume.atsScore ?? '—'}
-            </span>
-          </div>
-        </div> */}
       </div>
 
       {/* Body */}

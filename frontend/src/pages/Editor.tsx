@@ -312,6 +312,56 @@ export default function Editor() {
 
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lastSavedRef = useRef<string>('');
+  const previewRef = useRef<HTMLDivElement>(null);
+
+  // ── Print / PDF export ──
+  const printPdf = () => {
+    const previewEl = previewRef.current;
+    if (!previewEl) return;
+
+    // Create a hidden iframe
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;';
+    document.body.appendChild(iframe);
+
+    const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!iframeDoc) { document.body.removeChild(iframe); return; }
+
+    // Copy all stylesheets from the host page
+    const styleLinks = Array.from(document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]'))
+      .map(l => `<link rel="stylesheet" href="${l.href}" />`);
+    const inlineStyles = Array.from(document.querySelectorAll<HTMLStyleElement>('style'))
+      .map(s => `<style>${s.innerHTML}</style>`);
+
+    iframeDoc.open();
+    iframeDoc.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          ${styleLinks.join('')}
+          ${inlineStyles.join('')}
+          <style>
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            body { margin: 0; background: #fff; }
+            @page { margin: 0; size: A4; }
+          </style>
+        </head>
+        <body>${previewEl.innerHTML}</body>
+      </html>
+    `);
+    iframeDoc.close();
+
+    // Wait briefly for stylesheets to load before printing
+    setTimeout(() => {
+      try {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+      } finally {
+        setTimeout(() => document.body.removeChild(iframe), 1000);
+      }
+    }, 600);
+  };
 
   // Load resume
   useEffect(() => {
@@ -452,7 +502,7 @@ export default function Editor() {
             <button onClick={() => setDeployModalOpen(true)} className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/20 transition-colors">
               <Globe className="h-3 w-3" /> Publish
             </button>
-            <button onClick={() => window.print()} className="flex items-center gap-1 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 transition-colors">
+            <button onClick={printPdf} className="flex items-center gap-1 rounded-lg border border-zinc-700 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:bg-zinc-800 transition-colors">
               <Download className="h-3 w-3" /> PDF
             </button>
           </div>
@@ -644,20 +694,14 @@ export default function Editor() {
           </span>
           <span className="text-xs text-zinc-600">Changes save automatically</span>
         </div>
-        <div className="flex-1 overflow-y-auto print:overflow-visible">
-          <div className={`min-h-full shadow-2xl mx-auto print:mx-0 print:shadow-none ${isPortfolioTemplate ? 'bg-transparent' : 'bg-white'}`} style={{ maxWidth: isPortfolioTemplate ? '100%' : 900 }}>
+        <div ref={previewRef} className="flex-1 overflow-y-auto">
+          <div className={`min-h-full shadow-2xl mx-auto ${isPortfolioTemplate ? 'bg-transparent' : 'bg-white'}`} style={{ maxWidth: isPortfolioTemplate ? '100%' : 900 }}>
             <ResumePreview data={data} templateId={templateId} />
           </div>
         </div>
       </div>
 
-      <style>{`
-        @media print {
-          body > * { display: none !important; }
-          .flex.h-screen > div:last-child { display: block !important; }
-          .flex.h-screen > div:first-child { display: none !important; }
-        }
-      `}</style>
+      {/* no @media print override needed — printPdf uses an iframe */}
 
       <DeployModal
         isOpen={deployModalOpen}

@@ -38,7 +38,9 @@ export default function DashboardLayout() {
           <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-transparent">
             <Logo className="h-7 w-7" />
           </div>
-          <span className="text-sm font-bold tracking-tight text-zinc-100">NeatResume</span>
+          <button onClick={() => navigate('/')}>
+            <span className="text-sm font-bold tracking-tight text-zinc-100">NeatResume</span>
+          </button>
         </div>
 
         {/* Nav links */}
