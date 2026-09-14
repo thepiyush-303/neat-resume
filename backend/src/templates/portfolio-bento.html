@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ data.personalInfo.fullName }} | Bento Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #030712; font-family: 'Inter', sans-serif; padding: 28px 20px; color: #fff; }
+    .grid-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(12, 1fr); gap: 14px; }
+    
+    .card { border-radius: 20px; padding: 22px; overflow: hidden; }
+    
+    /* HERO: spans 8 */
+    .hero { background: linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#0ea5e9 100%); grid-column: span 8; position: relative; }
+    .hero-glow { position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(255,255,255,0.1); filter: blur(20px); }
+    .hero-content { position: relative; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,0.15); font-size: 11px; color: rgba(255,255,255,0.9); margin-bottom: 14px; font-weight: 500; }
+    h1 { font-size: 40px; font-weight: 900; margin: 0; line-height: 1.1; letter-spacing: -1px; }
+    .hero-bio { font-size: 14px; color: rgba(255,255,255,0.75); line-height: 1.75; max-width: 520px; margin: 12px 0 16px; }
+    .hero-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .hero-pill { font-size: 12px; padding: 5px 13px; border-radius: 10px; background: rgba(255,255,255,0.12); color: #fff; text-decoration: none; }
+    
+    /* INFO: spans 4 */
+    .info { background: #0f172a; grid-column: span 4; display: flex; flex-direction: column; gap: 12px; }
+    .location { display: flex; align-items: center; gap: 7px; color: #94a3b8; font-size: 13px; }
+    .block { padding: 14px; border-radius: 14px; background: #1e293b; }
+    .block-label { font-size: 10px; color: #475569; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+    .block-title { font-weight: 700; font-size: 13px; }
+    .block-sub { font-size: 12px; color: #94a3b8; margin-top: 3px; }
+    .block-accent { font-size: 11px; color: #818cf8; margin-top: 4px; }
+    .lang-tag { font-size: 11px; padding: 2px 8px; border-radius: 6px; background: #111827; color: #94a3b8; }
+    
+    /* SKILLS: spans 5 */
+    .skills { background: #0f172a; grid-column: span 5; }
+    .section-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 14px; }
+    .skill-cat { font-size: 10px; color: #475569; margin-bottom: 7px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+    .tag { font-size: 12px; padding: 4px 11px; border-radius: 8px; font-weight: 500; background: #172554; color: #93c5fd; border: 1px solid #1e3a8a; }
+    
+    /* EXPERIENCE: spans 7 */
+    .experience { background: #080c14; grid-column: span 7; }
+    .exp-list { display: flex; flex-direction: column; gap: 12px; }
+    .exp-item { padding: 14px; border-radius: 14px; background: #111827; }
+    .exp-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; flex-wrap: wrap; gap: 6px; }
+    .exp-role { font-weight: 700; font-size: 14px; }
+    .exp-comp { font-size: 12px; color: #6b7280; margin-top: 2px; }
+    .exp-date { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(139,92,246,0.15); color: #a78bfa; white-space: nowrap; }
+    .exp-bullet { font-size: 12px; color: #6b7280; margin: 4px 0 0; line-height: 1.6; }
+    
+    /* PROJECTS: spans 4 each */
+    .project { grid-column: span 4; background: #0d1117; }
+    .proj-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 9px; }
+    .proj-title { font-weight: 700; font-size: 15px; }
+    .proj-links { display: flex; gap: 8px; }
+    .proj-links a { font-size: 12px; color: #818cf8; text-decoration: none; font-weight: 600; }
+    .proj-desc { font-size: 13px; color: #6b7280; line-height: 1.6; margin: 0 0 12px; }
+    .proj-tag { font-size: 11px; padding: 3px 8px; border-radius: 6px; background: #1f2937; color: #9ca3af; }
+    
+    /* CERTS: spans 12 */
+    .certs { background: linear-gradient(135deg,#0f172a,#1e1b4b); grid-column: span 12; }
+    .cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+    .cert-item { display: flex; gap: 10px; padding: 12px; border-radius: 12px; background: rgba(255,255,255,0.03); align-items: flex-start; }
+    .cert-icon { color: #fbbf24; flex-shrink: 0; }
+    .cert-text { font-size: 13px; color: #d1d5db; line-height: 1.5; }
+
+    @media (max-width: 900px) {
+      .hero, .info, .skills, .experience, .project, .certs { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-container">
+    
+    <!-- Hero -->
+    <div class="card hero">
+      <div class="hero-glow"></div>
+      <div class="hero-content">
+        <div class="hero-badge">⚡ Available for opportunities</div>
+        <h1>{{ data.personalInfo.fullName }}</h1>
+        {{#if data.personalInfo.summary}}<p class="hero-bio">{{ data.personalInfo.summary }}</p>{{/if}}
+        <div class="hero-links">
+          {{#if data.personalInfo.email}}<a href="mailto:{{ data.personalInfo.email }}" class="hero-pill">✉ {{ data.personalInfo.email }}</a>{{/if}}
+          {{#if data.personalInfo.phone}}<span class="hero-pill">📞 {{ data.personalInfo.phone }}</span>{{/if}}
+          {{#if data.personalInfo.github}}<a href="{{ data.personalInfo.github }}" target="_blank" class="hero-pill">GitHub ↗</a>{{/if}}
+          {{#if data.personalInfo.linkedIn}}<a href="{{ data.personalInfo.linkedIn }}" target="_blank" class="hero-pill">LinkedIn ↗</a>{{/if}}
+          {{#if data.personalInfo.website}}<a href="{{ data.personalInfo.website }}" target="_blank" class="hero-pill">Website ↗</a>{{/if}}
+        </div>
+      </div>
+    </div>
+
+    <!-- Info / Education -->
+    <div class="card info">
+      {{#if data.personalInfo.location}}<div class="location">📍 {{ data.personalInfo.location }}</div>{{/if}}
+      
+      {{#each data.education as |ed|}}
+      <div class="block">
+        <div class="block-label">Education</div>
+        <div class="block-title">{{ ed.institution }}</div>
+        <div class="block-sub">{{ ed.degree }}{{#if ed.field}} in {{ ed.field }}{{/if}}</div>
+        {{#if ed.gpa}}<div class="block-accent" style="font-size:11px;">GPA {{ ed.gpa }}</div>{{/if}}
+        <div class="block-accent">{{ ed.startDate }} – {{#if ed.endDate}}{{ ed.endDate }}{{else}}Present{{/if}}</div>
+      </div>
+      {{/each}}
+      
+      {{#if data.languages}}
+      <div class="block">
+        <div class="block-label">Languages</div>
+        <div style="display:flex; flex-wrap:wrap; gap:5px;">
+          {{#each data.languages as |lang|}}<span class="lang-tag">{{ lang }}</span>{{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+
+    <!-- Skills -->
+    {{#if data.skills}}
+    <div class="card skills">
+      <div class="section-label" style="color:#818cf8;">Tech Stack</div>
+      {{#each data.skills as |sk|}}
+      <div>
+        <div class="skill-cat">{{ sk.category }}</div>
+        <div class="tags">
+          {{#each sk.items as |it|}}<span class="tag">{{ it }}</span>{{/each}}
+        </div>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    <!-- Experience -->
+    {{#if data.workExperience}}
+    <div class="card experience">
+      <div class="section-label" style="color:#a78bfa;">Experience</div>
+      <div class="exp-list">
+        {{#each data.workExperience as |exp|}}
+        <div class="exp-item">
+          <div class="exp-head">
+            <div>
+              <div class="exp-role">{{ exp.role }}</div>
+              <div class="exp-comp">{{ exp.company }}{{#if exp.location}} · {{ exp.location }}{{/if}}</div>
+            </div>
+            <span class="exp-date">{{ exp.startDate }} – {{#if exp.endDate}}{{ exp.endDate }}{{else}}Present{{/if}}</span>
+          </div>
+          {{#each exp.bullets as |b|}}<p class="exp-bullet">• {{ b }}</p>{{/each}}
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+    <!-- Projects -->
+    {{#each data.projects as |p|}}
+    <div class="card project" style="background:#0d1117">
+      <div class="proj-head">
+        <div class="proj-title">{{ p.name }}</div>
+        <div class="proj-links">
+          {{#if p.github}}<a href="{{ p.github }}" target="_blank">GH ↗</a>{{/if}}
+          {{#if p.url}}<a href="{{ p.url }}" target="_blank">Live ↗</a>{{/if}}
+        </div>
+      </div>
+      <p class="proj-desc">{{ p.description }}</p>
+      <div style="display:flex; flex-wrap:wrap; gap:5px;">
+        {{#each p.techStack as |ts|}}<span class="proj-tag">{{ ts }}</span>{{/each}}
+      </div>
+    </div>
+    {{/each}}
+
+    <!-- Certifications -->
+    {{#if data.certifications}}
+    <div class="card certs">
+      <div class="section-label" style="color:#fbbf24;">🏆 Certifications & Achievements</div>
+      <div class="cert-grid">
+        {{#each data.certifications as |c|}}
+        <div class="cert-item">
+          <span class="cert-icon">★</span>
+          <span class="cert-text">{{ c }}</span>
+        </div>
+        {{/each}}
+      </div>
+    </div>
+    {{/if}}
+
+  </div>
+
+</body>
+</html>

@@ -13,7 +13,7 @@ export class GitHubDeployer {
     this.octokit = new Octokit({ auth: token });
   }
 
-  async deployPortfolio(userId: string, resumeId: string, repoName: string) {
+  async deployPortfolio(userId: string, resumeId: string, repoName: string, templateId: string) {
     // 1. Fetch Resume & User Data
     const resume = await prisma.resume.findUnique({
       where: { id: resumeId, userId },
@@ -28,11 +28,18 @@ export class GitHubDeployer {
 
     // 2. Generate Portfolio locally via Handlebars
     let htmlContent: string;
-    let cssContent: string;
     try {
       const templateDir = path.join(__dirname, '..', 'templates');
-      const indexTemplate = fs.readFileSync(path.join(templateDir, 'index.html'), 'utf-8');
-      cssContent = fs.readFileSync(path.join(templateDir, 'styles.css'), 'utf-8');
+      // Use the provided templateId to load the corresponding HTML file (which now contains inline CSS)
+      const templateFilename = `${templateId || 'portfolio-standard'}.html`;
+      
+      let indexTemplate;
+      try {
+        indexTemplate = fs.readFileSync(path.join(templateDir, templateFilename), 'utf-8');
+      } catch (err) {
+        // Fallback if the specific template file doesn't exist
+        indexTemplate = fs.readFileSync(path.join(templateDir, 'portfolio-standard.html'), 'utf-8');
+      }
 
       const compile = Handlebars.compile(indexTemplate);
       htmlContent = compile({ data: resume.parsedData });
@@ -75,20 +82,12 @@ export class GitHubDeployer {
     const baseTreeSha = branch.data.commit.commit.tree.sha;
 
     // 5. Create blobs
-    const [htmlBlob, cssBlob] = await Promise.all([
-      this.octokit.rest.git.createBlob({
+    const htmlBlob = await this.octokit.rest.git.createBlob({
         owner: user.githubUsername,
         repo: repoName,
         content: htmlContent,
         encoding: 'utf-8',
-      }),
-      this.octokit.rest.git.createBlob({
-        owner: user.githubUsername,
-        repo: repoName,
-        content: cssContent,
-        encoding: 'utf-8',
-      }),
-    ]);
+    });
 
     // 6. Create tree
     const tree = await this.octokit.rest.git.createTree({
@@ -97,7 +96,6 @@ export class GitHubDeployer {
       base_tree: baseTreeSha,
       tree: [
         { path: 'index.html', mode: '100644', type: 'blob', sha: htmlBlob.data.sha },
-        { path: 'styles.css', mode: '100644', type: 'blob', sha: cssBlob.data.sha },
       ],
     });
 

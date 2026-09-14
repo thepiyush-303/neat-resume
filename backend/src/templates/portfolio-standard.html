@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ data.personalInfo.fullName }} | Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { min-height: 100vh; background: #fafafa; font-family: 'Inter', sans-serif; color: #111; }
+    
+    .hero { background: #fff; border-bottom: 1px solid #eee; padding: 56px 48px 40px; text-align: center; }
+    .avatar { width: 88px; height: 88px; border-radius: 50%; background: linear-gradient(135deg,#6366f1,#a855f7); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 36px; font-weight: 900; color: #fff; box-shadow: 0 8px 30px rgba(99,102,241,0.3); }
+    h1 { font-size: 42px; font-weight: 900; color: #111; margin: 0 0 8px; letter-spacing: -1.5px; line-height: 1.1; }
+    .summary { font-size: 15px; color: #6b7280; max-width: 660px; margin: 12px auto 0; line-height: 1.75; }
+    
+    .links-row { display: flex; justify-content: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+    .pill { font-size: 12px; padding: 6px 14px; border-radius: 20px; background: #f3f4f6; color: #374151; text-decoration: none; font-weight: 500; display: inline-block; }
+    
+    .content { max-width: 880px; margin: 0 auto; padding: 48px 32px; }
+    section { margin-bottom: 44px; }
+    h2 { font-size: 20px; font-weight: 800; color: #111; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 2px solid #111; }
+    
+    .card { padding: 20px 24px; background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; margin-bottom: 12px; }
+    .card-flex { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+    .role-title { font-weight: 700; font-size: 15px; color: #111; }
+    .company { font-size: 13px; color: #6366f1; margin-top: 2px; }
+    .date-str { font-size: 12px; color: #9ca3af; white-space: nowrap; }
+    ul.bullets { margin: 0; padding: 0 0 0 18px; }
+    ul.bullets li { font-size: 13px; color: #4b5563; line-height: 1.7; margin-bottom: 5px; }
+    
+    .skills-grid, .projects-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+    .projects-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+    .skill-cat { font-size: 12px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag { font-size: 12px; padding: 4px 10px; border-radius: 7px; background: #f3f4f6; color: #374151; font-weight: 500; }
+    .tech-tag { font-size: 11px; padding: 3px 9px; border-radius: 6px; background: #eef2ff; color: #4f46e5; font-weight: 500; }
+    
+    .proj-desc { font-size: 13px; color: #6b7280; line-height: 1.65; margin: 0 0 12px; }
+    .proj-link { font-size: 11px; color: #6366f1; text-decoration: none; font-weight: 600; margin-left: 8px; }
+  </style>
+</head>
+<body>
+  
+  <div class="hero">
+    <div class="avatar">{{#if data.personalInfo.fullName}}{{ data.personalInfo.fullName.[0] }}{{else}}U{{/if}}</div>
+    <h1>{{ data.personalInfo.fullName }}</h1>
+    {{#if data.personalInfo.summary}}<p class="summary">{{ data.personalInfo.summary }}</p>{{/if}}
+    
+    <div class="links-row">
+      {{#if data.personalInfo.email}}<a href="mailto:{{ data.personalInfo.email }}" class="pill">✉ {{ data.personalInfo.email }}</a>{{/if}}
+      {{#if data.personalInfo.phone}}<span class="pill">📞 {{ data.personalInfo.phone }}</span>{{/if}}
+      {{#if data.personalInfo.location}}<span class="pill">📍 {{ data.personalInfo.location }}</span>{{/if}}
+      {{#if data.personalInfo.github}}<a href="{{ data.personalInfo.github }}" target="_blank" class="pill">GitHub ↗</a>{{/if}}
+      {{#if data.personalInfo.linkedIn}}<a href="{{ data.personalInfo.linkedIn }}" target="_blank" class="pill">LinkedIn ↗</a>{{/if}}
+      {{#if data.personalInfo.website}}<a href="{{ data.personalInfo.website }}" target="_blank" class="pill">Website ↗</a>{{/if}}
+    </div>
+  </div>
+
+  <div class="content">
+    {{#if data.skills}}
+    <section>
+      <h2>Skills</h2>
+      <div class="skills-grid">
+        {{#each data.skills as |sk|}}
+        <div class="card" style="padding: 16px 20px;">
+          <div class="skill-cat">{{ sk.category }}</div>
+          <div class="tags">
+            {{#each sk.items as |it|}}<span class="tag">{{ it }}</span>{{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </section>
+    {{/if}}
+
+    {{#if data.workExperience}}
+    <section>
+      <h2>Experience</h2>
+      {{#each data.workExperience as |exp|}}
+      <div class="card">
+        <div class="card-flex">
+          <div>
+            <div class="role-title">{{ exp.role }}</div>
+            <div class="company">{{ exp.company }}{{#if exp.location}} · {{ exp.location }}{{/if}}</div>
+          </div>
+          <span class="date-str">{{ exp.startDate }} – {{#if exp.endDate}}{{ exp.endDate }}{{else}}Present{{/if}}</span>
+        </div>
+        {{#if exp.bullets}}
+        <ul class="bullets">
+          {{#each exp.bullets as |b|}}<li>{{ b }}</li>{{/each}}
+        </ul>
+        {{/if}}
+      </div>
+      {{/each}}
+    </section>
+    {{/if}}
+
+    {{#if data.education}}
+    <section>
+      <h2>Education</h2>
+      {{#each data.education as |ed|}}
+      <div class="card">
+        <div class="card-flex">
+          <div>
+            <div class="role-title">{{ ed.degree }}{{#if ed.field}} in {{ ed.field }}{{/if}}</div>
+            <div class="company">{{ ed.institution }}</div>
+            {{#if ed.gpa}}<div style="font-size: 12px; color: #9ca3af; margin-top: 2px;">GPA: {{ ed.gpa }}</div>{{/if}}
+          </div>
+          <span class="date-str">{{ ed.startDate }} – {{#if ed.endDate}}{{ ed.endDate }}{{else}}Present{{/if}}</span>
+        </div>
+      </div>
+      {{/each}}
+    </section>
+    {{/if}}
+
+    {{#if data.projects}}
+    <section>
+      <h2>Projects</h2>
+      <div class="projects-grid">
+        {{#each data.projects as |pr|}}
+        <div class="card">
+          <div class="card-flex" style="margin-bottom:8px">
+            <div style="font-weight:700; font-size:14px; color:#111;">{{ pr.name }}</div>
+            <div>
+              {{#if pr.github}}<a href="{{ pr.github }}" target="_blank" class="proj-link">GH ↗</a>{{/if}}
+              {{#if pr.url}}<a href="{{ pr.url }}" target="_blank" class="proj-link">Live ↗</a>{{/if}}
+            </div>
+          </div>
+          <p class="proj-desc">{{ pr.description }}</p>
+          <div class="tags">
+            {{#each pr.techStack as |ts|}}<span class="tech-tag">{{ ts }}</span>{{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </section>
+    {{/if}}
+
+    {{#if data.certifications}}
+    <section>
+      <h2>Certifications</h2>
+      <div class="card">
+        <ul class="bullets">
+          {{#each data.certifications as |cert|}}<li>{{ cert }}</li>{{/each}}
+        </ul>
+      </div>
+    </section>
+    {{/if}}
+
+    {{#if data.languages}}
+    <section>
+      <h2>Languages</h2>
+      <div class="tags">
+        {{#each data.languages as |lang|}}<span class="pill" style="background:#fff; border:1px solid #e5e7eb">{{ lang }}</span>{{/each}}
+      </div>
+    </section>
+    {{/if}}
+  </div>
+
+</body>
+</html>

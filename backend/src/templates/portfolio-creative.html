@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ data.personalInfo.fullName }} | Creative Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #0a0a0a; color: #fff; display: flex; min-height: 100vh; }
+    
+    /* LEFT SIDEBAR */
+    aside { width: 320px; flex-shrink: 0; background: #111; border-right: 1px solid rgba(249,115,22,0.15); padding: 40px 24px; display: flex; flex-direction: column; overflow-y: auto; height: 100vh; position: sticky; top: 0; }
+    .accent-bar { width: 40px; height: 3px; border-radius: 4px; background: #f97316; margin-bottom: 20px; }
+    h1 { font-size: 32px; font-weight: 900; line-height: 1.1; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .bio { font-size: 13px; color: #9ca3af; line-height: 1.75; margin-bottom: 24px; }
+    
+    .side-links { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+    .side-link { font-size: 12px; color: #9ca3af; text-decoration: none; display: flex; align-items: center; gap: 6px; }
+    
+    .side-label { font-size: 10px; font-weight: 700; color: #f97316; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 14px; }
+    .skill-cat { font-size: 11px; color: #6b7280; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 7px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 14px; }
+    .tag { font-size: 11px; padding: 3px 9px; border-radius: 7px; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.2); color: #fff; }
+    
+    .edu-item { margin-bottom: 16px; }
+    .edu-inst { font-weight: 600; font-size: 13px; }
+    .edu-deg { font-size: 12px; color: #9ca3af; margin-top: 3px; }
+    .edu-meta { font-size: 11px; color: #6b7280; margin-top: 2px; }
+    
+    .cert-item { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+    .cert-icon { color: #f97316; margin-top: 2px; flex-shrink: 0; }
+    .cert-text { font-size: 12px; color: #d1d5db; line-height: 1.5; }
+    
+    /* RIGHT MAIN */
+    main { flex: 1; padding: 40px 48px; overflow-y: auto; }
+    .main-label { font-size: 10px; font-weight: 700; color: #f97316; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px; }
+    section { margin-bottom: 52px; }
+    
+    .exp-item { margin-bottom: 36px; }
+    .exp-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; flex-wrap: wrap; gap: 8px; }
+    .exp-role { font-size: 20px; font-weight: 900; }
+    .exp-company { font-size: 13px; color: #9ca3af; margin-top: 3px; }
+    .exp-date { font-size: 12px; padding: 5px 14px; border-radius: 20px; background: rgba(249,115,22,0.12); border: 1px solid rgba(249,115,22,0.25); color: #f97316; white-space: nowrap; }
+    .bullets { list-style: none; padding: 0; margin: 10px 0 0; }
+    .bullets li { display: flex; gap: 12px; font-size: 14px; color: #9ca3af; line-height: 1.7; margin-bottom: 7px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: #f97316; flex-shrink: 0; margin-top: 8px; }
+    .divider { margin-top: 28px; height: 1px; background: rgba(249,115,22,0.08); }
+    
+    .proj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+    .proj-card { padding: 20px; border-radius: 16px; background: #111; border: 1px solid rgba(249,115,22,0.1); }
+    .proj-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 9px; }
+    .proj-title { font-weight: 700; font-size: 15px; }
+    .proj-links { display: flex; gap: 8px; }
+    .proj-link { color: #f97316; text-decoration: none; font-size: 12px; font-weight: 600; }
+    .proj-desc { font-size: 13px; color: #6b7280; line-height: 1.6; margin-bottom: 12px; }
+    
+    @media (max-width: 800px) {
+      body { flex-direction: column; }
+      aside { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid rgba(249,115,22,0.15); }
+      main { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside>
+    <div>
+      <div class="accent-bar"></div>
+      <h1>{{ data.personalInfo.fullName }}</h1>
+      {{#if data.personalInfo.summary}}<p class="bio">{{ data.personalInfo.summary }}</p>{{/if}}
+      
+      <div class="side-links">
+        {{#if data.personalInfo.email}}<a href="mailto:{{ data.personalInfo.email }}" class="side-link">✉ {{ data.personalInfo.email }}</a>{{/if}}
+        {{#if data.personalInfo.phone}}<span class="side-link">📞 {{ data.personalInfo.phone }}</span>{{/if}}
+        {{#if data.personalInfo.location}}<span class="side-link">📍 {{ data.personalInfo.location }}</span>{{/if}}
+        {{#if data.personalInfo.github}}<a href="{{ data.personalInfo.github }}" target="_blank" class="side-link">⌥ GitHub ↗</a>{{/if}}
+        {{#if data.personalInfo.linkedIn}}<a href="{{ data.personalInfo.linkedIn }}" target="_blank" class="side-link">in LinkedIn ↗</a>{{/if}}
+        {{#if data.personalInfo.website}}<a href="{{ data.personalInfo.website }}" target="_blank" class="side-link">🌐 Website ↗</a>{{/if}}
+      </div>
+
+      {{#if data.skills}}
+      <div style="margin-bottom: 28px;">
+        <div class="side-label">Skills</div>
+        {{#each data.skills as |sk|}}
+        <div>
+          <div class="skill-cat">{{ sk.category }}</div>
+          <div class="tags">
+            {{#each sk.items as |it|}}<span class="tag">{{ it }}</span>{{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+      
+      {{#if data.languages}}
+      <div style="margin-bottom: 28px;">
+        <div class="side-label">Languages</div>
+        <div class="tags">
+          {{#each data.languages as |lang|}}<span class="tag" style="background:rgba(249,115,22,0.08); border-color:rgba(249,115,22,0.15)">{{ lang }}</span>{{/each}}
+        </div>
+      </div>
+      {{/if}}
+    </div>
+
+    {{#if data.education}}
+    <div style="margin-top: auto; padding-top: 24px; border-top: 1px solid rgba(249,115,22,0.12);">
+      <div class="side-label">Education</div>
+      {{#each data.education as |ed|}}
+      <div class="edu-item">
+        <div class="edu-inst">{{ ed.institution }}</div>
+        <div class="edu-deg">{{ ed.degree }}{{#if ed.field}} in {{ ed.field }}{{/if}}</div>
+        {{#if ed.gpa}}<div class="edu-meta">GPA {{ ed.gpa }}</div>{{/if}}
+        <div class="edu-meta">{{ ed.startDate }} – {{#if ed.endDate}}{{ ed.endDate }}{{else}}Present{{/if}}</div>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+    
+    {{#if data.certifications}}
+    <div style="padding-top: 24px; margin-top: 24px; border-top: 1px solid rgba(249,115,22,0.12);">
+      <div class="side-label">Certifications</div>
+      {{#each data.certifications as |cert|}}
+      <div class="cert-item">
+        <span class="cert-icon">⚡</span>
+        <span class="cert-text">{{ cert }}</span>
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+  </aside>
+
+  <main>
+    {{#if data.workExperience}}
+    <section>
+      <div class="main-label">Experience</div>
+      {{#each data.workExperience as |exp|}}
+      <div class="exp-item">
+        <div class="exp-head">
+          <div>
+            <div class="exp-role">{{ exp.role }}</div>
+            <div class="exp-company">{{ exp.company }}{{#if exp.location}} — {{ exp.location }}{{/if}}</div>
+          </div>
+          <span class="exp-date">{{ exp.startDate }} → {{#if exp.endDate}}{{ exp.endDate }}{{else}}Present{{/if}}</span>
+        </div>
+        <ul class="bullets">
+          {{#each exp.bullets as |b|}}
+          <li><span class="dot"></span>{{ b }}</li>
+          {{/each}}
+        </ul>
+        <div class="divider"></div>
+      </div>
+      {{/each}}
+    </section>
+    {{/if}}
+
+    {{#if data.projects}}
+    <section>
+      <div class="main-label">Projects</div>
+      <div class="proj-grid">
+        {{#each data.projects as |p|}}
+        <div class="proj-card">
+          <div class="proj-head">
+            <div class="proj-title">{{ p.name }}</div>
+            <div class="proj-links">
+              {{#if p.github}}<a href="{{ p.github }}" target="_blank" class="proj-link">GH ↗</a>{{/if}}
+              {{#if p.url}}<a href="{{ p.url }}" target="_blank" class="proj-link">Live ↗</a>{{/if}}
+            </div>
+          </div>
+          <p class="proj-desc">{{ p.description }}</p>
+          <div class="tags">
+            {{#each p.techStack as |ts|}}<span class="tag" style="background:#1a1a1a; border:none; color:#9ca3af;">{{ ts }}</span>{{/each}}
+          </div>
+        </div>
+        {{/each}}
+      </div>
+    </section>
+    {{/if}}
+  </main>
+
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ data.personalInfo.fullName }} | Corporate Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #f8f9fa; font-family: 'Inter', sans-serif; padding: 32px 20px; color: #111; }
+    .container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 320px 1fr; gap: 24px; align-items: start; }
+    
+    /* LEFT SIDEBAR */
+    .sidebar { background: #fff; border-radius: 24px; padding: 32px 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f3f4f6; text-align: center; position: sticky; top: 20px; }
+    .avatar { width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, #a855f7, #4f46e5); margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 44px; font-weight: 800; }
+    h1 { font-size: 22px; font-weight: 800; margin: 0 0 6px; }
+    .role { font-size: 13px; color: #4f46e5; font-weight: 500; margin: 0 0 4px; }
+    .location { font-size: 12px; color: #9ca3af; margin-bottom: 20px; }
+    
+    .links { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+    .pill { font-size: 11px; padding: 4px 10px; border-radius: 20px; background: #f3f4f6; color: #374151; text-decoration: none; font-weight: 500; }
+    
+    .side-section { border-top: 1px solid #f3f4f6; padding-top: 20px; text-align: left; margin-bottom: 20px; }
+    .side-label { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+    .summary { font-size: 13px; color: #4b5563; line-height: 1.75; }
+    
+    .skill-cat { font-size: 11px; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+    .tag { font-size: 11px; color: #374151; padding: 3px 9px; background: #f3f4f6; border-radius: 7px; font-weight: 500; }
+    
+    .available { padding: 10px 14px; background: #f0fdf4; border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 12px; font-weight: 500; color: #166534; }
+    .available .dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+    
+    /* RIGHT MAIN */
+    .main { display: flex; flex-direction: column; gap: 20px; }
+    .card { background: #fff; border-radius: 24px; padding: 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f3f4f6; }
+    .card-title { font-size: 17px; font-weight: 800; margin: 0 0 20px; display: flex; align-items: center; gap: 8px; }
+    
+    .exp-item { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #f3f4f6; }
+    .exp-item:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .exp-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+    .exp-role { font-size: 16px; font-weight: 800; margin: 0 0 5px; }
+    .exp-company { font-size: 13px; color: #4f46e5; font-weight: 500; }
+    .exp-company span { color: #9ca3af; font-weight: 400; }
+    .exp-date { font-size: 12px; color: #6b7280; background: #f3f4f6; padding: 4px 12px; border-radius: 20px; white-space: nowrap; }
+    .bullets { margin: 0; padding: 0 0 0 18px; }
+    .bullets li { font-size: 14px; color: #4b5563; line-height: 1.7; margin-bottom: 7px; }
+    
+    .proj-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+    .proj-card { padding: 20px; border: 1px solid #f3f4f6; border-radius: 16px; }
+    .proj-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 9px; }
+    .proj-title { font-size: 15px; font-weight: 800; margin: 0; }
+    .proj-links a { font-size: 12px; color: #4f46e5; text-decoration: none; font-weight: 600; margin-left: 8px; }
+    .proj-desc { font-size: 13px; color: #6b7280; line-height: 1.65; margin: 0 0 12px; }
+    .proj-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .proj-tag { font-size: 11px; padding: 3px 10px; border-radius: 20px; background: #e0e7ff; color: #4f46e5; font-weight: 600; }
+    
+    @media (max-width: 900px) {
+      .container { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="avatar">{{#if data.personalInfo.fullName}}{{ data.personalInfo.fullName.[0] }}{{else}}U{{/if}}</div>
+      <h1>{{ data.personalInfo.fullName }}</h1>
+      {{#if data.workExperience.[0].role}}<div class="role">{{ data.workExperience.[0].role }}</div>{{/if}}
+      {{#if data.personalInfo.location}}<div class="location">📍 {{ data.personalInfo.location }}</div>{{/if}}
+
+      <div class="links">
+        {{#if data.personalInfo.email}}<a href="mailto:{{ data.personalInfo.email }}" class="pill">✉ Email</a>{{/if}}
+        {{#if data.personalInfo.phone}}<span class="pill">📞 {{ data.personalInfo.phone }}</span>{{/if}}
+        {{#if data.personalInfo.github}}<a href="{{ data.personalInfo.github }}" target="_blank" class="pill">GitHub ↗</a>{{/if}}
+        {{#if data.personalInfo.linkedIn}}<a href="{{ data.personalInfo.linkedIn }}" target="_blank" class="pill">LinkedIn ↗</a>{{/if}}
+        {{#if data.personalInfo.website}}<a href="{{ data.personalInfo.website }}" target="_blank" class="pill">Website ↗</a>{{/if}}
+      </div>
+
+      {{#if data.personalInfo.summary}}
+      <div class="side-section">
+        <div class="side-label">About</div>
+        <p class="summary">{{ data.personalInfo.summary }}</p>
+      </div>
+      {{/if}}
+
+      {{#if data.skills}}
+      <div class="side-section">
+        <div class="side-label">Skills</div>
+        {{#each data.skills as |sk|}}
+        <div class="skill-cat">{{ sk.category }}</div>
+        <div class="tags">
+          {{#each sk.items as |it|}}<span class="tag">{{ it }}</span>{{/each}}
+        </div>
+        {{/each}}
+      </div>
+      {{/if}}
+
+      {{#if data.languages}}
+      <div class="side-section">
+        <div class="side-label">Languages</div>
+        <div class="tags">
+          {{#each data.languages as |lang|}}<span class="tag">{{ lang }}</span>{{/each}}
+        </div>
+      </div>
+      {{/if}}
+
+      <div class="available">
+        <span class="dot"></span> Available for new opportunities
+      </div>
+    </div>
+
+    <div class="main">
+      {{#if data.workExperience}}
+      <section class="card">
+        <h2 class="card-title">💼 Experience</h2>
+        {{#each data.workExperience as |exp|}}
+        <div class="exp-item">
+          <div class="exp-head">
+            <div>
+              <h3 class="exp-role">{{ exp.role }}</h3>
+              <div class="exp-company">{{ exp.company }}{{#if exp.location}} <span>· {{ exp.location }}</span>{{/if}}</div>
+            </div>
+            <div class="exp-date">{{ exp.startDate }} – {{#if exp.endDate}}{{ exp.endDate }}{{else}}Present{{/if}}</div>
+          </div>
+          {{#if exp.bullets}}
+          <ul class="bullets">
+            {{#each exp.bullets as |b|}}<li>{{ b }}</li>{{/each}}
+          </ul>
+          {{/if}}
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+
+      {{#if data.education}}
+      <section class="card">
+        <h2 class="card-title">🎓 Education</h2>
+        {{#each data.education as |ed|}}
+        <div class="exp-item" style="border-bottom: 1px solid #f3f4f6; margin-bottom: 20px; padding-bottom: 20px;">
+          <div class="exp-head" style="margin: 0;">
+            <div>
+              <h3 class="exp-role">{{ ed.degree }}{{#if ed.field}} in {{ ed.field }}{{/if}}</h3>
+              <div class="exp-company">{{ ed.institution }}{{#if ed.location}} <span>· {{ ed.location }}</span>{{/if}}</div>
+              {{#if ed.gpa}}<div style="font-size:12px; color:#9ca3af; margin-top:3px;">GPA: {{ ed.gpa }}</div>{{/if}}
+            </div>
+            <div class="exp-date">{{ ed.startDate }} – {{#if ed.endDate}}{{ ed.endDate }}{{else}}Present{{/if}}</div>
+          </div>
+        </div>
+        {{/each}}
+      </section>
+      {{/if}}
+
+      {{#if data.projects}}
+      <section class="card">
+        <h2 class="card-title">🚀 Projects</h2>
+        <div class="proj-grid">
+          {{#each data.projects as |p|}}
+          <div class="proj-card">
+            <div class="proj-head">
+              <h3 class="proj-title">{{ p.name }}</h3>
+              <div class="proj-links">
+                {{#if p.github}}<a href="{{ p.github }}" target="_blank">GH ↗</a>{{/if}}
+                {{#if p.url}}<a href="{{ p.url }}" target="_blank">Live ↗</a>{{/if}}
+              </div>
+            </div>
+            <p class="proj-desc">{{ p.description }}</p>
+            <div class="proj-tags">
+              {{#each p.techStack as |ts|}}<span class="proj-tag">{{ ts }}</span>{{/each}}
+            </div>
+          </div>
+          {{/each}}
+        </div>
+      </section>
+      {{/if}}
+      
+      {{#if data.certifications}}
+      <section class="card">
+        <h2 class="card-title">🏆 Certifications</h2>
+        <ul class="bullets">
+          {{#each data.certifications as |cert|}}<li>{{ cert }}</li>{{/each}}
+        </ul>
+      </section>
+      {{/if}}
+    </div>
+  </div>
+</body>
+</html>
