@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { z } from 'zod';
-import { Eye, EyeOff, Loader2, Lock, Mail, User, CheckCircle2, FileText, ArrowLeft } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Lock, Mail, User, CheckCircle2, ArrowLeft } from 'lucide-react';
 import { useAuth, api } from '../context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,6 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import Logo from '@/components/Logo';
 
 // ─── Zod Schemas ──────────────────────────────────────────────────────────────
 
@@ -155,8 +156,8 @@ const AuthPage: React.FC = () => {
         <div className="absolute top-1/2 left-1/2 h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/10 blur-3xl pointer-events-none" />
 
         <Link to="/" className="relative flex items-center gap-2.5 group w-fit">
-          <div className="h-9 w-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30 group-hover:scale-105 transition-transform">
-            <FileText className="h-4.5 w-4.5 text-white" />
+          <div className="h-9 w-9 rounded-xl bg-transparent flex items-center justify-center shadow-lg shadow-indigo-600/30 group-hover:scale-105 transition-transform">
+            <Logo className="h-9 w-9" />
           </div>
           <span className="text-xl font-bold text-zinc-100">NeatResume</span>
         </Link>
@@ -207,8 +208,8 @@ const AuthPage: React.FC = () => {
           <CardHeader className="pb-2">
             {/* Mobile logo */}
             <Link to="/" className="flex lg:hidden items-center gap-2 mb-4">
-              <div className="h-7 w-7 rounded-lg bg-indigo-600 flex items-center justify-center">
-                <FileText className="h-3.5 w-3.5 text-white" />
+              <div className="h-7 w-7 rounded-lg bg-transparent flex items-center justify-center">
+                <Logo className="h-7 w-7" />
               </div>
               <span className="text-sm font-bold text-zinc-100">NeatResume</span>
             </Link>

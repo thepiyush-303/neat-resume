@@ -5,6 +5,7 @@ interface User {
   id: string;
   name: string;
   email: string;
+  photoBase64?: string;
 }
 
 export interface AuthContextType {
@@ -12,6 +13,7 @@ export interface AuthContextType {
   accessToken: string | null;
   login: (token: string, userData: User) => void;
   logout: () => void;
+  updateUser: (data: Partial<User>) => void;
   loading: boolean;
   isInitialized: boolean;
   isAuthenticated: boolean;
@@ -22,6 +24,7 @@ export const AuthContext = createContext<AuthContextType>({
   accessToken: null,
   login: () => {},
   logout: () => {},
+  updateUser: () => {},
   loading: true,
   isInitialized: false,
   isAuthenticated: false,
@@ -133,6 +136,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
   };
 
+  const updateUser = (data: Partial<User>) => {
+    setUser(prev => prev ? { ...prev, ...data } : null);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -140,6 +147,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         accessToken,
         login,
         logout,
+        updateUser,
         loading,
         isInitialized,
         isAuthenticated: !!accessToken,

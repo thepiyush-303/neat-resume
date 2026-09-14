@@ -9,6 +9,7 @@ import resumeRouter from './routes/resumeRoutes';
 import githubRoutes from './routes/githubRoutes';
 import portfolioRoutes from './routes/portfolioRoutes';
 import optimizerRoutes from './routes/optimizerRoutes';
+import profileRoutes from './routes/profileRoutes';
 import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/resumes', resumeRouter);
 app.use('/api/github', githubRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/ats-optimizer', optimizerRoutes);
+app.use('/api/user/profile', profileRoutes);
 
 // Health check
 app.get('/health', (_req, res) => {

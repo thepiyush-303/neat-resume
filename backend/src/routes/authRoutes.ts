@@ -87,7 +87,10 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res, next)
   try {
     const { email, password } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.user.findUnique({ 
+      where: { email },
+      include: { profile: true } 
+    });
     if (!user) {
       res.status(401).json({ error: 'Invalid email or password' });
       return;
@@ -119,7 +122,12 @@ router.post('/login', authLimiter, validate(LoginSchema), async (req, res, next)
 
     res.status(200).json({
       accessToken,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: { 
+        id: user.id, 
+        name: user.name, 
+        email: user.email,
+        photoBase64: user.profile?.photoBase64 || undefined 
+      },
     });
   } catch (err) {
     next(err);
@@ -195,13 +203,19 @@ router.get('/me', authenticate, async (req: AuthRequest, res, next) => {
     }
     const user = await prisma.user.findUnique({
       where: { id: req.user.id },
-      select: { id: true, name: true, email: true, createdAt: true },
+      include: { profile: true },
     });
     if (!user) {
       res.status(404).json({ error: 'User not found' });
       return;
     }
-    res.status(200).json(user);
+    res.status(200).json({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      createdAt: user.createdAt,
+      photoBase64: user.profile?.photoBase64 || undefined
+    });
   } catch (err) {
     next(err);
   }

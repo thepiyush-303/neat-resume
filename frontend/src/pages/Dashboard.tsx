@@ -11,14 +11,11 @@ import {
   Pencil,
   Copy,
   Trash2,
-  ChevronRight,
-  Sparkles,
   CheckCircle2,
   Globe,
   AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
@@ -29,7 +26,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { api, useAuth } from '../context/AuthContext';
 import { ConfirmDialog } from '../components/ConfirmDialog';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -52,12 +49,12 @@ function getAtsColor(score: number | null) {
   return 'text-red-400 bg-red-400/10 border-red-400/20';
 }
 
-function getAtsRing(score: number | null) {
-  if (score === null) return 'stroke-zinc-600';
-  if (score >= 80) return 'stroke-emerald-400';
-  if (score >= 60) return 'stroke-amber-400';
-  return 'stroke-red-400';
-}
+// function getAtsRing(score: number | null) {
+//   if (score === null) return 'stroke-zinc-600';
+//   if (score >= 80) return 'stroke-emerald-400';
+//   if (score >= 60) return 'stroke-amber-400';
+//   return 'stroke-red-400';
+// }
 
 function relativeTime(iso: string): string {
   const diff = Date.now() - new Date(iso).getTime();
@@ -95,27 +92,27 @@ function StatCard({
   );
 }
 
-function AtsRing({ score }: { score: number | null }) {
-  const r = 20;
-  const circ = 2 * Math.PI * r;
-  const offset = score !== null ? circ - (score / 100) * circ : circ;
-  return (
-    <svg width="52" height="52" className="-rotate-90">
-      <circle cx="26" cy="26" r={r} strokeWidth="4" stroke="#27272a" fill="none" />
-      <circle
-        cx="26"
-        cy="26"
-        r={r}
-        strokeWidth="4"
-        fill="none"
-        strokeDasharray={circ}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        className={`transition-all duration-700 ${getAtsRing(score)}`}
-      />
-    </svg>
-  );
-}
+// function AtsRing({ score }: { score: number | null }) {
+//   const r = 20;
+//   const circ = 2 * Math.PI * r;
+//   const offset = score !== null ? circ - (score / 100) * circ : circ;
+//   return (
+//     <svg width="52" height="52" className="-rotate-90">
+//       <circle cx="26" cy="26" r={r} strokeWidth="4" stroke="#27272a" fill="none" />
+//       <circle
+//         cx="26"
+//         cy="26"
+//         r={r}
+//         strokeWidth="4"
+//         fill="none"
+//         strokeDasharray={circ}
+//         strokeDashoffset={offset}
+//         strokeLinecap="round"
+//         className={`transition-all duration-700 ${getAtsRing(score)}`}
+//       />
+//     </svg>
+//   );
+// }
 
 function ResumeCard({
   resume,
@@ -150,7 +147,7 @@ function ResumeCard({
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all duration-300 z-10 scale-95 group-hover:scale-100">
           <Button 
             variant="secondary" 
-            className="gap-2 shadow-lg hover:scale-105 pointer-events-auto transition-transform"
+            className="gap-2 shadow-lg pointer-events-auto transition-transform"
             onClick={(e) => { e.stopPropagation(); onEdit(resume.id); }}
           >
             <Pencil className="h-4 w-4" /> Open Editor
@@ -159,7 +156,7 @@ function ResumeCard({
           {resume.portfolioUrl && (
             <Button
               variant="default"
-              className="gap-2 shadow-lg hover:scale-105 pointer-events-auto transition-transform bg-indigo-600 text-white hover:bg-indigo-500"
+              className="gap-2 shadow-lg pointer-events-auto transition-transform bg-indigo-600 text-white hover:bg-indigo-500"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open(resume.portfolioUrl!, '_blank');
@@ -364,6 +361,7 @@ export default function Dashboard() {
         <div className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
           <div className="flex items-center gap-4">
             <Avatar className="h-12 w-12 ring-2 ring-indigo-600/30">
+              {user?.photoBase64 && <AvatarImage src={user.photoBase64} alt={displayName} className="object-cover" />}
               <AvatarFallback className="bg-indigo-600/20 text-indigo-300 font-bold text-lg">
                 {displayName.charAt(0).toUpperCase()}
               </AvatarFallback>

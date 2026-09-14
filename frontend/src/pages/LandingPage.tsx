@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import Logo from '@/components/Logo';
 
 const Github = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -140,8 +141,8 @@ function Navbar({ onSignIn, onSignUp }: { onSignIn: () => void; onSignUp: () => 
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-zinc-800/60 bg-zinc-950/80 backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
-            <FileText className="h-4 w-4 text-white" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-transparent">
+            <Logo className="h-8 w-8" />
           </div>
           <span className="text-base font-bold text-zinc-100">NeatResume</span>
         </div>
@@ -195,11 +196,11 @@ export default function LandingPage() {
       <Navbar onSignIn={goSignIn} onSignUp={goSignUp} />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-20">
+      <section className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 pt-5">
         {/* Grid background */}
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:48px_48px] opacity-40" />
         {/* Glow */}
-        <div className="pointer-events-none absolute top-1/3 left-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/10 blur-3xl" />
+        <div className="pointer-events-none absolute top-1/4 left-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/10 blur-3xl" />
 
         <div className="relative z-10 flex max-w-4xl flex-col items-center text-center">
           <a
@@ -208,7 +209,7 @@ export default function LandingPage() {
             rel="noreferrer"
             className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 transition-colors"
           >
-            <Github className="h-3.5 w-3.5" /> ⭐ Star on GitHub · thepiyush-303/neat-resume
+            <Github className="h-3.5 w-3.5" /> Please Star ⭐ our GitHub Repo · thepiyush-303/neat-resume
           </a>
 
           <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-7xl leading-[1.05]">
@@ -228,7 +229,7 @@ export default function LandingPage() {
             <Button
               onClick={goSignUp}
               size="lg"
-              className="group gap-2 rounded-xl bg-indigo-600 px-8 py-6 text-base font-semibold text-white hover:bg-indigo-500 shadow-xl shadow-indigo-600/25 transition-all duration-200 hover:shadow-indigo-600/40 hover:scale-[1.02]"
+              className="group gap-2 mt-3 rounded-xl bg-indigo-600 px-6 py-5 text-base font-semibold text-white"
             >
               Build my resume free
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -237,13 +238,12 @@ export default function LandingPage() {
               onClick={goSignIn}
               variant="outline"
               size="lg"
-              className="rounded-xl border-zinc-700 px-8 py-6 text-base text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100"
+              className="rounded-xl mt-3 border-zinc-700 px-6 py-5 text-base text-zinc-800 hover:bg-zinc-800 hover:text-zinc-100"
             >
               Sign in
             </Button>
           </div>
 
-          <p className="mt-5 text-xs text-zinc-600">No credit card required · Free forever plan available</p>
         </div>
 
         {/* Mock editor preview */}
@@ -290,7 +290,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── Features ─────────────────────────────────────────────────── */}
-      <section id="features" className="py-28 px-6">
+      <section id="features" className="py-20 px-6">
         <div className="mx-auto max-w-7xl">
           <div className="mb-16 text-center">
             <Badge className="mb-4 rounded-full border border-zinc-700 bg-zinc-900 px-4 py-1.5 text-xs text-zinc-400">
@@ -300,16 +300,16 @@ export default function LandingPage() {
               Everything you need to{' '}
               <span className="text-indigo-400">land the job</span>
             </h2>
-            <p className="mt-4 max-w-xl mx-auto text-zinc-500 text-center">
+            {/* <p className="mt-4 max-w-xl mx-auto text-zinc-500 text-center">
               NeatResume isn't just a template tool — it's a complete resume intelligence platform.
-            </p>
+            </p> */}
           </div>
 
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {FEATURES.map((f) => (
               <div
                 key={f.title}
-                className={`group relative overflow-hidden rounded-2xl border ${f.border} bg-gradient-to-br ${f.color} p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-black/30`}
+                className={`group relative overflow-hidden rounded-2xl border ${f.border} bg-gradient-to-br ${f.color} p-6 transition-all duration-300`}
               >
                 <div className={`mb-4 flex h-10 w-10 items-center justify-center rounded-xl bg-zinc-900/80 ${f.accent}`}>
                   {f.icon}
@@ -364,11 +364,10 @@ export default function LandingPage() {
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
-                className={`relative flex flex-col rounded-2xl border p-8 transition-all ${
-                  plan.highlight
+                className={`relative flex flex-col rounded-2xl border p-8 transition-all ${plan.highlight
                     ? 'border-indigo-500/50 bg-indigo-600/5 shadow-2xl shadow-indigo-600/10 scale-[1.02]'
                     : 'border-zinc-800 bg-zinc-900'
-                }`}
+                  }`}
               >
                 {plan.badge && (
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
@@ -397,11 +396,10 @@ export default function LandingPage() {
 
                 <Button
                   onClick={goSignUp}
-                  className={`w-full rounded-xl py-5 font-semibold ${
-                    plan.highlight
+                  className={`w-full rounded-xl py-5 font-semibold ${plan.highlight
                       ? 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/25'
                       : 'border border-zinc-700 bg-transparent text-zinc-300 hover:bg-zinc-800 hover:text-zinc-100'
-                  }`}
+                    }`}
                   variant={plan.highlight ? 'default' : 'outline'}
                 >
                   {plan.cta}
@@ -420,13 +418,13 @@ export default function LandingPage() {
             <h2 className="relative mb-4 text-4xl font-extrabold text-zinc-100">
               Ready to land your dream job?
             </h2>
-            <p className="relative mb-8 text-zinc-400">
+            <p className="relative mb-10 text-zinc-400">
               Join thousands of candidates who got hired faster with NeatResume.
             </p>
             <Button
               onClick={goSignUp}
               size="lg"
-              className="group relative gap-2 rounded-xl bg-indigo-600 px-10 py-6 text-base font-semibold text-white hover:bg-indigo-500 shadow-xl shadow-indigo-600/30"
+              className="group relative gap-4 top-4 rounded-xl bg-indigo-600 px-10 py-5 text-base font-semibold text-white hover:bg-indigo-500 shadow-xl shadow-indigo-600/30"
             >
               Start for free — no card needed
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
@@ -439,8 +437,8 @@ export default function LandingPage() {
       <footer className="border-t border-zinc-800 py-10 px-6">
         <div className="mx-auto max-w-7xl flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-indigo-600">
-              <FileText className="h-3 w-3 text-white" />
+            <div className="flex h-6 w-6 items-center justify-center rounded-md bg-transparent">
+              <Logo className="h-6 w-6" />
             </div>
             <span className="text-sm font-bold text-zinc-300">NeatResume</span>
           </div>
@@ -448,11 +446,11 @@ export default function LandingPage() {
             © {new Date().getFullYear()} NeatResume. Built with ❤️ and Gemini AI.
           </p>
           <div className="flex items-center gap-4 text-zinc-600">
-              <a href="https://github.com/thepiyush-303/neat-resume" target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-zinc-300 cursor-pointer transition-colors">
-                <Github className="h-4 w-4" />
-              </a>
-              <Twitter className="h-4 w-4 hover:text-zinc-300 cursor-pointer transition-colors" />
-            </div>
+            <a href="https://github.com/thepiyush-303/neat-resume" target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-zinc-300 cursor-pointer transition-colors">
+              <Github className="h-4 w-4" />
+            </a>
+            <Twitter className="h-4 w-4 hover:text-zinc-300 cursor-pointer transition-colors" />
+          </div>
         </div>
       </footer>
     </div>

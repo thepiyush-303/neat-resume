@@ -305,7 +305,7 @@ export default function Editor() {
   const [portfolioUrl, setPortfolioUrl] = useState<string | null>(null);
 
   // Resizable sidebar state
-  const [sidebarWidth, setSidebarWidth] = useState(360);
+  const [sidebarWidth, setSidebarWidth] = useState(620);
   const isResizing = useRef(false);
   const dragStartX = useRef(0);
   const dragStartWidth = useRef(0);
@@ -364,7 +364,7 @@ export default function Editor() {
     const onMove = (mv: MouseEvent) => {
       if (!isResizing.current) return;
       const delta = mv.clientX - dragStartX.current;
-      const newW = Math.min(Math.max(dragStartWidth.current + delta, 280), 620);
+      const newW = Math.min(Math.max(dragStartWidth.current + delta, 280), 1000);
       setSidebarWidth(newW);
     };
     const onUp = () => {

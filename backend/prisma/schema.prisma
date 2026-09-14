@@ -22,6 +22,24 @@ model User {
   githubConnectedAt   DateTime?
   atsUploads          AtsResumeUpload[]
   atsOptimized        AtsOptimizedResume[]
+  profile             UserProfile?
+}
+
+model UserProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  photoBase64 String?
+  jobTitle    String?
+  bio         String?
+  location    String?
+  phone       String?
+  linkedinUrl String?
+  portfolioUrl String?
+  twitterUrl  String?
+  githubUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Session {

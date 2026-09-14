@@ -13,6 +13,7 @@ const UploadPage = lazy(() => import('./pages/UploadPage'));
 const Editor = lazy(() => import('./pages/Editor'));
 const ResumePicker = lazy(() => import('./pages/ResumePicker'));
 const AtsOptimizer = lazy(() => import('./pages/AtsOptimizer'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function PageLoader() {
@@ -37,10 +38,11 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthPage />} />
 
-              {/* Protected with sidebar layout */}
+              {/* Protected routes */}
               <Route element={<ProtectedRoute />}>
                 <Route element={<DashboardLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/profile" element={<ProfilePage />} />
                   <Route path="/resumes/upload" element={<UploadPage />} />
                   <Route path="/editor" element={<ResumePicker />} />
                   <Route path="/ats-optimizer" element={<AtsOptimizer />} />
