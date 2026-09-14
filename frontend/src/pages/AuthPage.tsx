@@ -68,6 +68,7 @@ const AuthPage: React.FC = () => {
   }, [params]);
 
   const [hasAttemptedAutoLogin, setHasAttemptedAutoLogin] = useState(false);
+  const [autoLoginStatus, setAutoLoginStatus] = useState('');
 
   useEffect(() => {
     if (!isInitialized) return;
@@ -78,23 +79,68 @@ const AuthPage: React.FC = () => {
 
     if (autoLogin === 'true' && autoEmail && autoPassword && !isAuthenticated && !hasAttemptedAutoLogin) {
       setHasAttemptedAutoLogin(true);
+
+      const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+
       const performAutoLogin = async () => {
         setLoading(true);
-        try {
-          const { data } = await api.post('/api/auth/login', { email: autoEmail, password: autoPassword });
-          if (data.accessToken && data.user) {
-            login(data.accessToken, data.user);
-            navigate(params.get('redirect') || '/dashboard');
+        const MAX_ATTEMPTS = 5;
+        const BASE_DELAY_MS = 2000; // start at 2s, doubles each retry
+
+        for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+          try {
+            if (attempt === 1) {
+              setAutoLoginStatus('Signing you in…');
+            } else {
+              setAutoLoginStatus(`Waking up server… (attempt ${attempt}/${MAX_ATTEMPTS})`);
+            }
+
+            const { data } = await api.post('/api/auth/login', {
+              email: autoEmail,
+              password: autoPassword,
+            });
+
+            if (data.accessToken && data.user) {
+              login(data.accessToken, data.user);
+              navigate(params.get('redirect') || '/dashboard');
+              return; // success — stop retrying
+            }
+
+            // Got a response but no token — wrong credentials, don't retry
+            setServerError('Auto-login failed. Please sign in manually.');
+            setLoading(false);
+            setAutoLoginStatus('');
+            return;
+
+          } catch (err: any) {
+            const status = err.response?.status;
+
+            // 401/403 = wrong credentials — no point retrying
+            if (status === 401 || status === 403) {
+              setServerError('Auto-login failed: incorrect credentials.');
+              setLoading(false);
+              setAutoLoginStatus('');
+              return;
+            }
+
+            // Network error / 5xx / timeout → likely cold start, retry
+            if (attempt < MAX_ATTEMPTS) {
+              const waitMs = BASE_DELAY_MS * Math.pow(2, attempt - 1); // 2s, 4s, 8s, 16s
+              setAutoLoginStatus(`Server is waking up… retrying in ${waitMs / 1000}s (${attempt}/${MAX_ATTEMPTS})`);
+              await delay(waitMs);
+            } else {
+              setServerError('Could not reach the server. Please try signing in manually.');
+              setLoading(false);
+              setAutoLoginStatus('');
+            }
           }
-        } catch (err: any) {
-          setServerError('Auto-login failed. Please sign in manually.');
-        } finally {
-          setLoading(false);
         }
       };
+
       performAutoLogin();
     }
   }, [params, isAuthenticated, isInitialized, login, navigate, hasAttemptedAutoLogin]);
+
 
   const switchMode = (m: 'login' | 'register') => {
     navigate(`/auth?mode=${m}`, { replace: true });
@@ -335,6 +381,14 @@ const AuthPage: React.FC = () => {
               {serverError && (
                 <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-xs font-medium text-red-400 text-center">
                   {serverError}
+                </div>
+              )}
+
+              {/* Auto-login status (cold-start retry feedback) */}
+              {autoLoginStatus && (
+                <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-3 flex items-center gap-2 text-xs font-medium text-indigo-300">
+                  <Loader2 className="h-3.5 w-3.5 animate-spin flex-shrink-0" />
+                  {autoLoginStatus}
                 </div>
               )}
 
