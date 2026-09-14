@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FileText,
-  Plus,
   Upload,
   MoreVertical,
   Search,
@@ -399,13 +398,6 @@ export default function Dashboard() {
                 GitHub Connected
               </div>
             )}
-            <Button
-              variant="outline"
-              className="gap-2 rounded-xl border-zinc-700 text-zinc-300 hover:border-zinc-600 hover:text-zinc-100 hover:bg-zinc-800"
-              onClick={() => navigate('/templates')}
-            >
-              <Plus className="h-4 w-4" /> Create from Blank
-            </Button>
             <Button
               className="gap-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-600/20"
               onClick={() => navigate('/resumes/upload')}

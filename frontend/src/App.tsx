@@ -11,7 +11,7 @@ const AuthPage = lazy(() => import('./pages/AuthPage'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const UploadPage = lazy(() => import('./pages/UploadPage'));
 const Editor = lazy(() => import('./pages/Editor'));
-const TemplateSelection = lazy(() => import('./pages/TemplateSelection'));
+const ResumePicker = lazy(() => import('./pages/ResumePicker'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function PageLoader() {
@@ -41,7 +41,7 @@ function App() {
                 <Route element={<DashboardLayout />}>
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/resumes/upload" element={<UploadPage />} />
-                  <Route path="/templates" element={<TemplateSelection />} />
+                  <Route path="/editor" element={<ResumePicker />} />
                 </Route>
 
                 {/* Editor — full-screen, no sidebar */}

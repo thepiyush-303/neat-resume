@@ -202,9 +202,14 @@ export default function LandingPage() {
         <div className="pointer-events-none absolute top-1/3 left-1/2 h-[500px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-600/10 blur-3xl" />
 
         <div className="relative z-10 flex max-w-4xl flex-col items-center text-center">
-          <Badge className="mb-6 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-300">
-            ✦ Powered by Gemini 2.5 Flash · Zero-setup resume builder
-          </Badge>
+          <a
+            href="https://github.com/thepiyush-303/neat-resume"
+            target="_blank"
+            rel="noreferrer"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-500/30 bg-indigo-500/10 px-4 py-1.5 text-xs font-semibold text-indigo-300 hover:bg-indigo-500/20 transition-colors"
+          >
+            <Github className="h-3.5 w-3.5" /> ⭐ Star on GitHub · thepiyush-303/neat-resume
+          </a>
 
           <h1 className="mb-6 text-5xl font-extrabold tracking-tight text-white md:text-7xl leading-[1.05]">
             Your resume,{' '}
@@ -295,7 +300,7 @@ export default function LandingPage() {
               Everything you need to{' '}
               <span className="text-indigo-400">land the job</span>
             </h2>
-            <p className="mt-4 max-w-xl mx-auto text-zinc-500">
+            <p className="mt-4 max-w-xl mx-auto text-zinc-500 text-center">
               NeatResume isn't just a template tool — it's a complete resume intelligence platform.
             </p>
           </div>
@@ -443,9 +448,11 @@ export default function LandingPage() {
             © {new Date().getFullYear()} NeatResume. Built with ❤️ and Gemini AI.
           </p>
           <div className="flex items-center gap-4 text-zinc-600">
-            <Github className="h-4 w-4 hover:text-zinc-300 cursor-pointer transition-colors" />
-            <Twitter className="h-4 w-4 hover:text-zinc-300 cursor-pointer transition-colors" />
-          </div>
+              <a href="https://github.com/thepiyush-303/neat-resume" target="_blank" rel="noreferrer" aria-label="GitHub" className="hover:text-zinc-300 cursor-pointer transition-colors">
+                <Github className="h-4 w-4" />
+              </a>
+              <Twitter className="h-4 w-4 hover:text-zinc-300 cursor-pointer transition-colors" />
+            </div>
         </div>
       </footer>
     </div>

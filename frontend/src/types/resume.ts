@@ -72,6 +72,12 @@ export const TEMPLATE_IDS = [
   { id: "corporate", label: "Corporate" },
   { id: "creative", label: "Creative" },
   { id: "terminal", label: "Terminal" },
+  // Portfolio templates (deployed to GitHub Pages)
+  { id: "portfolio-standard", label: "Portfolio – Standard" },
+  { id: "portfolio-minimalist", label: "Portfolio – Minimalist" },
+  { id: "portfolio-bento", label: "Portfolio – Bento Grid" },
+  { id: "portfolio-creative", label: "Portfolio – Creative" },
+  { id: "portfolio-corporate", label: "Portfolio – Corporate" },
 ] as const;
 
 export type TemplateId = typeof TEMPLATE_IDS[number]["id"];

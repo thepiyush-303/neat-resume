@@ -15,11 +15,13 @@ export function DeployModal({
   isOpen,
   onClose,
   resumeId,
+  templateId,
   onDeployed,
 }: {
   isOpen: boolean;
   onClose: () => void;
   resumeId: string;
+  templateId?: string;
   onDeployed: (url: string) => void;
 }) {
   const [repoName, setRepoName] = useState('neatresume-portfolio');
@@ -30,7 +32,7 @@ export function DeployModal({
     setLoading(true);
     setError('');
     try {
-      const { data } = await api.post('/api/portfolio/deploy', { resumeId, repoName });
+      const { data } = await api.post('/api/portfolio/deploy', { resumeId, repoName, templateId });
       onDeployed(data.url);
       onClose();
     } catch (e: any) {

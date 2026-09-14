@@ -2,11 +2,11 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard,
   Upload,
-  Layout,
   LogOut,
   User,
   ChevronDown,
   FileText,
+  Pencil,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
@@ -14,7 +14,7 @@ import { useState } from 'react';
 const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/resumes/upload', icon: Upload, label: 'Upload Resume' },
-  { to: '/templates', icon: Layout, label: 'Templates' },
+  { to: '/editor', icon: Pencil, label: 'Editor' },
 ];
 
 export default function DashboardLayout() {
