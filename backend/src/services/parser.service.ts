@@ -1,6 +1,4 @@
-// Using require-style import to handle pdf-parse's CJS module structure
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const pdfParse = require('pdf-parse');
+import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
 import { GoogleGenAI } from '@google/genai';
 import { ResumeDataSchema, type ResumeData } from '../types/ResumeSchema';

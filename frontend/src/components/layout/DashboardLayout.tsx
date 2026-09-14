@@ -7,6 +7,7 @@ import {
   ChevronDown,
   FileText,
   Pencil,
+  Target,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useState } from 'react';
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
   { to: '/resumes/upload', icon: Upload, label: 'Upload Resume' },
   { to: '/editor', icon: Pencil, label: 'Editor' },
+  { to: '/ats-optimizer', icon: Target, label: 'ATS Optimizer' },
 ];
 
 export default function DashboardLayout() {

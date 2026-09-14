@@ -20,6 +20,8 @@ model User {
   githubAccessToken   String?
   githubUsername      String?
   githubConnectedAt   DateTime?
+  atsUploads          AtsResumeUpload[]
+  atsOptimized        AtsOptimizedResume[]
 }
 
 model Session {
@@ -63,4 +65,43 @@ model Resume {
 
   @@index([userId])
   @@index([isDeleted])
+}
+
+// ── ATS Optimizer (separate from Resume / deployer) ──────────────────────────
+
+/// Stores an original PDF uploaded specifically for ATS optimization.
+/// Completely separate from the dashboard Resume model.
+model AtsResumeUpload {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  originalName String
+  parsedData  Json
+  atsScore    Int?
+  pdfBuffer   Bytes    // store original PDF for rendering/download
+  createdAt   DateTime @default(now())
+
+  optimizedVersions AtsOptimizedResume[]
+
+  @@index([userId])
+}
+
+/// Stores a JD-optimized version of an AtsResumeUpload.
+/// parsedData has the reworded content; pdfBuffer has the rebuilt PDF.
+model AtsOptimizedResume {
+  id            String          @id @default(cuid())
+  userId        String
+  user          User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceId      String
+  source        AtsResumeUpload @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  companyName   String
+  roleTitle     String
+  parsedData    Json
+  atsScore      Int?
+  pdfBuffer     Bytes           // rebuilt PDF with optimized content
+  jdDictionary  Json
+  createdAt     DateTime        @default(now())
+
+  @@index([userId])
+  @@index([sourceId])
 }
