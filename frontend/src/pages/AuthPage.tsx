@@ -44,15 +44,25 @@ const AuthPage: React.FC = () => {
     params.get('mode') === 'register' ? 'register' : 'login'
   );
 
+  const isAutoLogin = params.get('autoLogin') === 'true'
+    && !!params.get('email')
+    && !!params.get('password');
+
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [loading, setLoading] = useState(false);
+  // Start loading immediately if autoLogin params are present
+  const [loading, setLoading] = useState(isAutoLogin);
   const [serverError, setServerError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
+  const [hasAttemptedAutoLogin, setHasAttemptedAutoLogin] = useState(false);
+  // Show 'Waking up server…' immediately if autoLogin params found
+  const [autoLoginStatus, setAutoLoginStatus] = useState(
+    isAutoLogin ? 'Waking up server…' : ''
+  );
 
   const { login, isAuthenticated, isInitialized } = useAuth();
   const navigate = useNavigate();
@@ -67,8 +77,7 @@ const AuthPage: React.FC = () => {
     setServerError('');
   }, [params]);
 
-  const [hasAttemptedAutoLogin, setHasAttemptedAutoLogin] = useState(false);
-  const [autoLoginStatus, setAutoLoginStatus] = useState('');
+
 
   useEffect(() => {
     if (!isInitialized) return;
